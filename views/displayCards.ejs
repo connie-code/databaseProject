@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <h1><%= key[0] %></h1>
+    <table border="1">
+      <tr>
+        <th>#</th>
+        <th>Card Name</th>
+        <th>Description</th>
+      </tr>
+
+      <% for(let i = 1; i < key.length; i++) {%>
+        <tr>
+          <td><%= i %></td>
+          <td><%= key[i].cardName %></td>
+          <td><%= key[i].description %></td>
+         </tr>
+      <% } %>
+
+
+    </table>
+
+  </body>
+</html>

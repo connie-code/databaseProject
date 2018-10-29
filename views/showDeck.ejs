@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <form class="" action="/showDeck/editName" method="POST">
+      <table>
+        <tr>
+          <td><input type="text" name="deckName" value="<%= key[0] %>"></td>
+          <td><button type="submit" value="<%= deckID %>" name="edit">Edit Deck Name</button></td>
+        </tr>
+
+      </table>
+
+    </form>
+
+    <table border="1">
+      <tr>
+        <th>#</th>
+        <th>Card Name</th>
+        <th>Description</th>
+        <th></th>
+        <th></th>
+      </tr>
+
+      <% for(let i = 1; i < key.length; i++) {%>
+        <tr>
+          <form class="" action="/showDeck/updateCard" method="post">
+            <td><%= i %></td>
+            <td><input type="text" name="cardName" value="<%= key[i].cardName %>"></td>
+            <td><input type="text" name="cardDescription" value="<%= key[i].description %>"></td>
+            <td><button type="submit" name="cardId" value="<%= key[i].cardId %>">Save</button></td>
+            
+          </form>
+
+          <td><form class="" action="/showDeck/deleteCard" method="POST">
+            <button type="submit" value="<%= key[i].cardId %>" name="delete">Delete</button>
+          </form></td>
+         </tr>
+
+      <% } %>
+
+    </table>
+    <form class="" action="/showDeck/addCard" method="GET">
+      <button type="submit" value="<%= deckID %>" name="add">Add Card</button>
+    </form>
+
+  </body>
+</html>

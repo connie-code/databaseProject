@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <h1>Dashboard</h1>
+
+    <table>
+      <table border="1">
+      <tbody>
+        <tr>
+          <form class="" action="/displayDecks" method="get">
+            <td><button type="submit" name="box" value="2">Science</button></td>
+            <td><button type="submit" name="box" value="1">Math</button></td>
+            <td><button type="submit" name="box" value="3">Computer Science</button></td>
+            <td><button type="submit" name="box" value="5">Art</button></td>
+            <td><button type="submit" name="box" value="7">Music</button></td>
+            <td><button type="submit" name="box" value="6">History</button></td>
+            <td><button type="submit" name="box" value="4">English</button></td>
+          </form>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Decks: </h3> <button type="submit" name="button">Create</button>
+    <!-- <form class="" action="/showDeck" method="GET"> -->
+      <!-- <ol> -->
+      <table>
+        <% for(let i = 0; i < key.length; i++) {%>
+          <tr>
+              <!-- <td><button type="submit" value="<%= key[i].deckId %>" name="deck"> <%= key[i].name %> </button></td> -->
+              <td> <%= key[i].name %> </td>
+              <form class="" action="/showDeck" method="GET">
+                <td><button type="submit" value="<%= key[i].deckId %>" name="edit">Edit</button></td>
+              </form>
+              <form class="" action="/dashboard/deleteDeck" method="post">
+                <td><button type="submit" value="<%= key[i].deckId %>" name="delete">Delete</button></td>
+              </form>
+
+            <p></p>
+          </tr>
+
+        <% } %>
+      </table>
+
+      <!-- </ol> -->
+    <!-- </form> -->
+
+  </body>
+</html>

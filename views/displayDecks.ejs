@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <h1><%= key[0] %></h1>
+    <form class="" action="/displayCards" method="GET">
+      <ol>
+        <% for(let i = 1; i < key.length; i++) {%>
+          <li> <button type="submit" value="<%= key[i].deckId %>" name="deck"> <%= key[i].name %> </button> </li>
+        <% } %>
+      </ol>
+    </form>
+
+    <!-- <h1> <%= name %> </h1> -->
+
+  </body>
+</html>
