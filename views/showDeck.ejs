@@ -15,7 +15,7 @@
       </table>
 
     </form>
-
+    <br>
     <table border="1">
       <tr>
         <th>#</th>
@@ -32,7 +32,7 @@
             <td><input type="text" name="cardName" value="<%= key[i].cardName %>"></td>
             <td><input type="text" name="cardDescription" value="<%= key[i].description %>"></td>
             <td><button type="submit" name="cardId" value="<%= key[i].cardId %>">Save</button></td>
-            
+
           </form>
 
           <td><form class="" action="/showDeck/deleteCard" method="POST">
@@ -43,7 +43,7 @@
       <% } %>
 
     </table>
-    <form class="" action="/showDeck/addCard" method="GET">
+    <form class="" action="/showDeck/addCard" method="POST">
       <button type="submit" value="<%= deckID %>" name="add">Add Card</button>
     </form>
 

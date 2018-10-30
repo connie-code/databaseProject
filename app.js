@@ -112,7 +112,7 @@ app.post("/register", function(req, res){
 });
 
 app.get("/dashboard", function(req, res){
-  console.log(signedInUser.userID);
+  // console.log(signedInUser.userID);
   if(signedInUser.loggedIn){
     let result = [];
     let q = "SELECT * FROM deck WHERE userId = " + signedInUser.userID;
@@ -128,6 +128,19 @@ app.get("/dashboard", function(req, res){
   else{
     res.redirect("/");
   }
+});
+//***************************
+app.post("/createDeck", function(req, res){
+  let userID = signedInUser.userID;
+  // let q = "INSERT INTO deck (name, userId) VALUES ('Untitled', "+ userID + ")";
+  let newDeck = {
+    name: "Untitled",
+    userID: userID
+  }
+  connection.query("INSERT INTO deck SET ?", newDeck, function(err, results){
+    if(err) throw err;
+  });
+  res.redirect("/dashboard");
 });
 
 app.get("/showDeck", function(req, res){ //to edit the deck selected from dashboard
@@ -197,7 +210,7 @@ app.post("/showDeck/deleteCard", function(req, res){
   res.redirect("/showDeck");
 });
 
-app.get("/showDeck/addCard", function(req, res){
+app.post("/showDeck/addCard", function(req, res){
   let deckID = signedInUser.currentDeckID;
   console.log(deckID);
   // let q = "SELECT cardId FROM cards ORDER BY cardId DESC LIMIT 1";
@@ -283,6 +296,10 @@ app.post("/dashboard/deleteDeck", function(req, res){
 //   });
 // });
 
+
+app.get('*', function(req, res) {
+    res.redirect('/dashboard');
+});
 
 //bottom
 app.listen(8080, function() {
