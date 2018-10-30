@@ -5,16 +5,34 @@
     <title></title>
   </head>
   <body>
-    <form class="" action="/showDeck/editName" method="POST">
-      <table>
-        <tr>
+
+    <table>
+      <tr>
+        <form class="" action="/showDeck/editName" method="POST">
           <td><input type="text" name="deckName" value="<%= key[0] %>"></td>
           <td><button type="submit" value="<%= deckID %>" name="edit">Edit Deck Name</button></td>
-        </tr>
+        </form>
+        <form class="" action="/showDeck/updateTopic" method="POST">
+          <td>
+            <select class="" value="" name="chosenTopic">
+              <% for(let i = topic.length-1; i >= 0; i--) {%>
+                <% if(key[1]===topic[i].topicId) {%>
+                  <option selected="selected" value="<%= topic[i].topicId %>"><%= topic[i].topicName %></option>
+                <% } else {%>
+                  <option value="<%= topic[i].topicId %>"><%= topic[i].topicName %></option>
+                <% } %>
 
-      </table>
+              <% } %>
 
-    </form>
+            </select>
+
+          </td>
+          <td><button type="submit" value="<%= deckID %>" name="updateTopic">Select Topic</button></td>
+        </form>
+      </tr>
+
+    </table>
+
     <br>
     <table border="1">
       <tr>
@@ -25,7 +43,7 @@
         <th></th>
       </tr>
 
-      <% for(let i = 1; i < key.length; i++) {%>
+      <% for(let i = 2; i < key.length; i++) {%>
         <tr>
           <form class="" action="/showDeck/updateCard" method="post">
             <td><%= i %></td>
