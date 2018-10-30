@@ -12,7 +12,6 @@ app.use(express.static(__dirname + "/public")); // Use public folder to access c
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'Noosa11',
     database: 'quizbase'
 });
 
