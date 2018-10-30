@@ -319,6 +319,13 @@ app.post("/dashboard/deleteDeck", function(req, res){
   res.redirect("/dashboard");
 });
 
+app.post("/signout", function(req, res){
+  signedInUser.userID = "0";
+  signedInUser.userName = "";
+  signedInUser.loggedIn = false;
+  signedInUser.currentDeckID = 0;
+  res.redirect("/");
+})
 
 // app.post("/register", function(req, res){
 //   let username = req.query.username;
