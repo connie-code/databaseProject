@@ -75,7 +75,8 @@ INSERT INTO school(schoolName, location)
 VALUES ("City College", "Manhattan"),
   ("Hunter", "Manhattan"),
   ("College of Staten Island", "Staten Island"),
-  ("Brooklyn College", "Brooklyn");
+  ("Brooklyn College", "Brooklyn"),
+  ("Select the school", "NULL");
 
 
 INSERT INTO topic(topicName)

@@ -9,14 +9,15 @@
     <table>
       <tr>
         <form class="" action="/showDeck/editName" method="POST">
-          <td><input type="text" name="deckName" value="<%= key[0] %>"></td>
+          <td><input type="text" name="deckName" value="<%= deckName %>"></td>
           <td><button type="submit" value="<%= deckID %>" name="edit">Edit Deck Name</button></td>
         </form>
+
         <form class="" action="/showDeck/updateTopic" method="POST">
           <td>
             <select class="" value="" name="chosenTopic">
               <% for(let i = topic.length-1; i >= 0; i--) {%>
-                <% if(key[1]===topic[i].topicId) {%>
+                <% if(topicID===topic[i].topicId) {%>
                   <option selected="selected" value="<%= topic[i].topicId %>"><%= topic[i].topicName %></option>
                 <% } else {%>
                   <option value="<%= topic[i].topicId %>"><%= topic[i].topicName %></option>
@@ -28,6 +29,24 @@
 
           </td>
           <td><button type="submit" value="<%= deckID %>" name="updateTopic">Select Topic</button></td>
+        </form>
+
+        <form class="" action="/showDeck/updateSchool" method="POST">
+          <td>
+            <select class="" value="" name="chosenSchool">
+              <% for(let i = school.length-1; i >= 0; i--) {%>
+                <% if(schoolID===school[i].schoolId) {%>
+                  <option selected="selected" value="<%= school[i].schoolId %>"><%= school[i].schoolName %></option>
+                <% } else {%>
+                  <option value="<%= school[i].schoolId %>"><%= school[i].schoolName %></option>
+                <% } %>
+
+              <% } %>
+
+            </select>
+
+          </td>
+          <td><button type="submit" value="<%= deckID %>" name="updateSchool">Select School</button></td>
         </form>
       </tr>
 
@@ -43,10 +62,10 @@
         <th></th>
       </tr>
 
-      <% for(let i = 2; i < key.length; i++) {%>
+      <% for(let i = 0; i < key.length; i++) {%>
         <tr>
           <form class="" action="/showDeck/updateCard" method="post">
-            <td><%= i %></td>
+            <td><%= i+1 %></td>
             <td><input type="text" name="cardName" value="<%= key[i].cardName %>"></td>
             <td><input type="text" name="cardDescription" value="<%= key[i].description %>"></td>
             <td><button type="submit" name="cardId" value="<%= key[i].cardId %>">Save</button></td>
