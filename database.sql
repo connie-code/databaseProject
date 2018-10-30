@@ -27,7 +27,7 @@ CREATE TABLE deck(
   deckId INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(255),
   userId INT,
-  topicId INT,
+  topicId INT DEFAULT 8,
   creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   schoolId INT,
   foreign key(userId) references user(userId),
@@ -77,6 +77,7 @@ VALUES ("City College", "Manhattan"),
   ("College of Staten Island", "Staten Island"),
   ("Brooklyn College", "Brooklyn");
 
+
 INSERT INTO topic(topicName)
 VALUES ("Math"),
   ("Science"),
@@ -84,7 +85,9 @@ VALUES ("Math"),
   ("English"),
   ("Art"),
   ("History"),
-  ("Music");
+  ("Music"),
+  ("Select your topic");
+
 
 INSERT INTO deck(name, userId, topicId, creationDate, schoolId)
 VALUES ("Linear Algebra", 1, 1, CURDATE(), 2),

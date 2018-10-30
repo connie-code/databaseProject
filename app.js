@@ -152,20 +152,27 @@ app.get("/showDeck", function(req, res){ //to edit the deck selected from dashbo
     signedInUser.currentDeckID = deckID;
   }
 
-  let q = "SELECT name FROM deck WHERE deckId =" + deckID;
+  let q = "SELECT name, topicId FROM deck WHERE deckId =" + deckID;
   let r = "SELECT cardId, cardName, description FROM cards WHERE deckId = " + deckID;
-
+  let t = "SELECT * FROM topic";
   let result = [];
+  let topicName =[];
   connection.query(q, function(err, results){
     if(err) throw err;
     result.push(results[0].name);
+    result.push(results[0].topicId);
 
     connection.query(r, function(err, results){
       if(err) throw err;
       results.forEach(function(card) {result.push(card);})
       console.log(result);
 
-      res.render("showDeck", {key: result, deckID: deckID});
+      connection.query(t, function(err, results){
+        if(err) throw err;
+        results.forEach(function(topic) {topicName.push(topic);})
+        res.render("showDeck", {key: result, deckID: deckID, topic: topicName});
+      });
+      // res.render("showDeck", {key: result, deckID: deckID});
     });
   });
 });
@@ -222,7 +229,16 @@ app.post("/showDeck/addCard", function(req, res){
     console.log(results);
     res.redirect("/showDeck");
   });
+});
 
+app.post("/showDeck/updateTopic", function(req, res){
+  let topicID = req.body.chosenTopic;
+  let deckID = req.body.updateTopic;
+  let q = "UPDATE deck SET topicId = " + topicID + " WHERE deckid = " + deckID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+  });
+  res.redirect("/showDeck");
 });
 
 app.get("/displayDecks", function(req, res){
