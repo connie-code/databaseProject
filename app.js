@@ -265,7 +265,6 @@ app.get("/displayDecks", function(req, res){
   let q = "SELECT topicName FROM topic WHERE topicId = " + topicID;
   console.log(topicID);
   let d = "SELECT deckId, name FROM deck WHERE topicId = " + topicID;
-  // let result = {topicKey: topic};
   let result=[];
   connection.query(q, function(err, results){
     if(err) throw err;
@@ -277,9 +276,7 @@ app.get("/displayDecks", function(req, res){
       results.forEach(function(deck) {result.push(deck);}) //deck is object
       // results.forEach(deck => {result.push(deck);})
       console.log(result);
-      // result.push(results[0].name);
-      // console.log(results[0].name);
-      res.render("displayDecks", {key: result, name: "Connie"});
+      res.render("displayDecks", {key: result});
     });
   });
   // let test = {key: result, name: "Connie"};
@@ -288,20 +285,22 @@ app.get("/displayDecks", function(req, res){
 
 app.get("/displayCards", function(req, res){
   let deckID = req.query.deck;
-  let q = "SELECT name FROM deck WHERE deckId =" + deckID;
+  let q = "SELECT name, user.username FROM deck JOIN user ON user.userId = deck.userId WHERE deckId =" + deckID;
   let r = "SELECT cardName, description FROM cards WHERE deckId = " + deckID;
-
+  let deckInfo = []
   let result = [];
   connection.query(q, function(err, results){
     if(err) throw err;
-    result.push(results[0].name);
+    console.log(results);
+    results.forEach(function(deck) {deckInfo.push(deck);})
+    console.log(deckInfo);
 
     connection.query(r, function(err, results){
       if(err) throw err;
       results.forEach(function(card) {result.push(card);})
       console.log(result);
 
-      res.render("displayCards", {key: result});
+      res.render("displayCards", {deckInfo: deckInfo, key: result});
     });
   });
 });
