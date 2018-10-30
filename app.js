@@ -152,15 +152,18 @@ app.get("/showDeck", function(req, res){ //to edit the deck selected from dashbo
     signedInUser.currentDeckID = deckID;
   }
 
-  let q = "SELECT name, topicId FROM deck WHERE deckId =" + deckID;
+  let q = "SELECT name, topicId, schoolId FROM deck WHERE deckId =" + deckID;
   let r = "SELECT cardId, cardName, description FROM cards WHERE deckId = " + deckID;
   let t = "SELECT * FROM topic";
+  let s = "SELECT * FROM school";
   let result = [];
   let topicName =[];
+  let schoolName =[];
   connection.query(q, function(err, results){
     if(err) throw err;
-    result.push(results[0].name);
-    result.push(results[0].topicId);
+    let deckName = results[0].name;
+    let topicID = results[0].topicId;
+    let schoolID = results[0].schoolId;
 
     connection.query(r, function(err, results){
       if(err) throw err;
@@ -170,7 +173,13 @@ app.get("/showDeck", function(req, res){ //to edit the deck selected from dashbo
       connection.query(t, function(err, results){
         if(err) throw err;
         results.forEach(function(topic) {topicName.push(topic);})
-        res.render("showDeck", {key: result, deckID: deckID, topic: topicName});
+
+        connection.query(s, function(err, results){
+          if(err) throw err;
+          results.forEach(function(school) {schoolName.push(school);})
+          res.render("showDeck", {deckName: deckName, topicID: topicID, schoolID: schoolID, key: result, deckID: deckID, topic: topicName, school: schoolName});
+        });
+
       });
       // res.render("showDeck", {key: result, deckID: deckID});
     });
@@ -235,6 +244,16 @@ app.post("/showDeck/updateTopic", function(req, res){
   let topicID = req.body.chosenTopic;
   let deckID = req.body.updateTopic;
   let q = "UPDATE deck SET topicId = " + topicID + " WHERE deckid = " + deckID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+  });
+  res.redirect("/showDeck");
+});
+
+app.post("/showDeck/updateSchool", function(req, res){
+  let schoolID = req.body.chosenSchool;
+  let deckID = req.body.updateSchool;
+  let q = "UPDATE deck SET schoolId = " + schoolID + " WHERE deckid = " + deckID;
   connection.query(q, function(err, results){
     if(err) throw err;
   });
