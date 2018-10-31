@@ -18,7 +18,7 @@ CREATE TABLE topic(
 CREATE TABLE user(
   userId INT AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(255) NOT NULL UNIQUE,
-  email VARCHAR(255) NOT NULL UNIQUE
+  password VARCHAR(255) NOT NULL
   -- schoolId INT,
   -- FOREIGN KEY(schoolId) REFERENCES school(schoolId)
 );
@@ -66,11 +66,11 @@ CREATE TABLE members(
 );
 
 
-INSERT INTO user(username, email)
-VALUES ("Connie", "connie@gmail.com"),
-  ("Friend", "Friend@gmail.com"),
-  ("Cindy", "Cindy@gmail.com"),
-  ("John Connor", "john@gmail.com");
+INSERT INTO user(username, password)
+VALUES ("Connie", "people123"),
+  ("Friend", "people123"),
+  ("Cindy", "people123"),
+  ("John Connor", "people123");
 
 INSERT INTO school(schoolName, location)
 VALUES ("City College", "Manhattan"),

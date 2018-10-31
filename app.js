@@ -24,7 +24,8 @@ connection.connect(function(error) {
     }
 });
 
-let signedInUser = { userID: "0", userName: "", loggedIn: false, currentDeckID: 0};
+let signedInUser = { userID: "0", userName: "", loggedIn: false, currentDeckID: 0, userExist: false};
+// let userExist = false;
 
 app.get("/", function(req,res){
   if(signedInUser.loggedIn){
@@ -47,20 +48,20 @@ app.get("/signin", function(req, res){
 
 app.post("/login", function(req, res){
     let username = req.body.username;
-    let email = req.body.email;
-    console.log(username, email);
-    let q = "SELECT userId, username, email FROM user WHERE username = '" + username + "' AND email = '" + email + "'";
+    let password = req.body.password;
+    console.log(username, password);
+    let q = "SELECT userId, username, password FROM user WHERE username = '" + username + "' AND password = '" + password + "'";
     connection.query(q, function(err, results){
       if(err) throw err;
       if(results[0]){
-        console.log("The username and email are correct!");
+        console.log("The username and password are correct!");
         signedInUser.userID = results[0].userId;
         signedInUser.userName = results[0].username;
         signedInUser.loggedIn = true;
         res.redirect('/dashboard');
       }
       else{
-        console.log("The username or email is incorrect. Try again.");
+        console.log("The username or password is incorrect. Try again.");
         res.redirect('/signin');
       }
     });
@@ -85,51 +86,75 @@ app.post("/login", function(req, res){
 
 app.post("/register", function(req, res){
     let username = req.body.username;
-    let email = req.body.email;
-    console.log(username, email);
+    let password = req.body.password;
+    console.log(username, password);
     let q = "SELECT username FROM user WHERE username = '" + username + "'";
-    // connection.query(q, function(err, results){
-    //   console.log("hi, reached the username area");
-    //   if(err) throw err;
-    //   if(results[0]) {
-    //     res.redirect('/dashboard');
-    //     console.log(results);
-    //   }
-    // });
-    //
-    // q = "SELECT email FROM user WHERE email = '" + email + "'";
-    // connection.query(q, function(err, results){
-    //   console.log("hi, reached the email area");
-    //   if(err) throw err;
-    //   if(results[0]) {
-    //     res.redirect('/dashboard');
-    //     console.log(results);
-    //   }
-    // });
-
-    q = "INSERT INTO user(username, email) VALUES ('" + username + "', '" + email + "')";
-    connection.query(q, function(err, results){
-      if(err) throw err;
-      console.log(results[0]);
-
-      // res.redirect("/dashboard");
-    });
-    q = "SELECT userId, username, email FROM user WHERE username = '" + username + "' AND email = '" + email + "'";
     connection.query(q, function(err, results){
       if(err) throw err;
       if(results[0]){
-        console.log("Account Successfully Created!");
-        signedInUser.userID = results[0].userId;
-        signedInUser.userName = results[0].username;
-        signedInUser.loggedIn = true;
-        res.redirect('/dashboard');
-      }
-      else{
-        console.log("Account Unsuccessfully Created!");
+        console.log("This username is taken");
         res.redirect('/');
+      }else{
+        q = "INSERT INTO user(username, password) VALUES ('" + username + "', '" + password + "')";
+        connection.query(q, function(err, results){
+          if(err) throw err;
+          console.log(results);
+
+        });
+        q = "SELECT userId, username, password FROM user WHERE username = '" + username + "' AND password = '" + password + "'";
+        connection.query(q, function(err, results){
+          if(err) throw err;
+          if(results[0]){
+            console.log("Account Successfully Created!");
+            signedInUser.userID = results[0].userId;
+            signedInUser.userName = results[0].username;
+            signedInUser.loggedIn = true;
+            res.redirect('/dashboard');
+          }
+        });
+
       }
     });
 });
+// app.post("/register", function(req, res){
+//     let username = req.body.username;
+//     let password = req.body.password;
+//     console.log(username, password);
+//     let q = "SELECT username FROM user WHERE username = '" + username + "'";
+//     connection.query(q, function(err, results){
+//       if(err) throw err;
+//       if(results[0]){
+//         signedInUser.userExist = true;
+//       }
+//       console.log(signedInUser.userExist);
+//
+//     });
+//     console.log(signedInUser.userExist);
+//     if(signedInUser.userExist){
+//       q = "INSERT INTO user(username, password) VALUES ('" + username + "', '" + password + "')";
+//       connection.query(q, function(err, results){
+//         if(err) throw err;
+//         console.log(results);
+//
+//       });
+//       q = "SELECT userId, username, password FROM user WHERE username = '" + username + "' AND password = '" + password + "'";
+//       connection.query(q, function(err, results){
+//         if(err) throw err;
+//         if(results[0]){
+//           console.log("Account Successfully Created!");
+//           signedInUser.userID = results[0].userId;
+//           signedInUser.userName = results[0].username;
+//           signedInUser.loggedIn = true;
+//           signedInUser.userExist = false;
+//           res.redirect('/dashboard');
+//         }
+//       });
+//     }
+//     else{
+//       console.log("Account Unsuccessfully Created!");
+//       res.redirect('/');
+//     }
+// });
 
 app.get("/dashboard", function(req, res){
   // console.log(signedInUser.userID);
@@ -282,47 +307,56 @@ app.post("/showDeck/updateSchool", function(req, res){
 
 app.get("/displayDecks", function(req, res){
   let topicID = req.query.box;
-  let q = "SELECT topicName FROM topic WHERE topicId = " + topicID;
-  console.log(topicID);
-  let d = "SELECT deckId, name FROM deck WHERE topicId = " + topicID;
-  let result=[];
-  connection.query(q, function(err, results){
-    if(err) throw err;
-    // console.log(results);
-    result.push(results[0].topicName);
-
-    connection.query(d, function(err, results){
+  if(topicID === undefined){
+    res.redirect("/dashboard");
+  }
+  else{
+    let q = "SELECT topicName FROM topic WHERE topicId = " + topicID;
+    console.log(topicID);
+    let d = "SELECT deckId, name FROM deck WHERE topicId = " + topicID;
+    let result=[];
+    connection.query(q, function(err, results){
       if(err) throw err;
-      results.forEach(function(deck) {result.push(deck);}) //deck is object
-      // results.forEach(deck => {result.push(deck);})
-      console.log(result);
-      res.render("displayDecks", {key: result});
+      // console.log(results);
+      result.push(results[0].topicName);
+
+      connection.query(d, function(err, results){
+        if(err) throw err;
+        results.forEach(function(deck) {result.push(deck);}) //deck is object
+        // results.forEach(deck => {result.push(deck);})
+        console.log(result);
+        res.render("displayDecks", {key: result});
+      });
     });
-  });
-  // let test = {key: result, name: "Connie"};
-  // res.render("displayDecks", {key: result, name: "Connie"});
+  }
 });
 
 app.get("/displayCards", function(req, res){
   let deckID = req.query.deck;
-  let q = "SELECT name, user.username FROM deck JOIN user ON user.userId = deck.userId WHERE deckId =" + deckID;
-  let r = "SELECT cardName, description FROM cards WHERE deckId = " + deckID;
-  let deckInfo = []
-  let result = [];
-  connection.query(q, function(err, results){
-    if(err) throw err;
-    console.log(results);
-    results.forEach(function(deck) {deckInfo.push(deck);})
-    console.log(deckInfo);
-
-    connection.query(r, function(err, results){
+  if(deckID === undefined){
+    res.redirect("/dashboard");
+  }
+  else{
+    let q = "SELECT name, user.username FROM deck JOIN user ON user.userId = deck.userId WHERE deckId =" + deckID;
+    let r = "SELECT cardName, description FROM cards WHERE deckId = " + deckID;
+    let deckInfo = []
+    let result = [];
+    connection.query(q, function(err, results){
       if(err) throw err;
-      results.forEach(function(card) {result.push(card);})
-      console.log(result);
+      console.log(results);
+      results.forEach(function(deck) {deckInfo.push(deck);})
+      console.log(deckInfo);
 
-      res.render("displayCards", {deckInfo: deckInfo, key: result});
+      connection.query(r, function(err, results){
+        if(err) throw err;
+        results.forEach(function(card) {result.push(card);})
+        console.log(result);
+
+        res.render("displayCards", {deckInfo: deckInfo, key: result});
+      });
     });
-  });
+  }
+
 });
 
 app.post("/dashboard/deleteDeck", function(req, res){
@@ -345,18 +379,6 @@ app.post("/signout", function(req, res){
   signedInUser.currentDeckID = 0;
   res.redirect("/");
 })
-
-// app.post("/register", function(req, res){
-//   let username = req.query.username;
-//   let email = req.query.email;
-//   let q = "INSERT INTO user(username, email) VALUES (" + username + "," + email + ")";
-//
-//   connection.query(q, function(err, results){
-//     // if(err) throw err;
-//     res.redirect("/dashboard");
-//   });
-// });
-
 
 app.get('*', function(req, res) {
     res.redirect('/dashboard');
