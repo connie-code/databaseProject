@@ -69,13 +69,19 @@ CREATE TABLE members(
 INSERT INTO user(username, email)
 VALUES ("Connie", "connie@gmail.com"),
   ("Friend", "Friend@gmail.com"),
-  ("Cindy", "Cindy@gmail.com");
+  ("Cindy", "Cindy@gmail.com"),
+  ("John Connor", "john@gmail.com");
 
 INSERT INTO school(schoolName, location)
 VALUES ("City College", "Manhattan"),
   ("Hunter", "Manhattan"),
   ("College of Staten Island", "Staten Island"),
   ("Brooklyn College", "Brooklyn"),
+  ("John Jay", "Manhattan"),
+  ("BMCC", "Manhattan"),
+  ("Wagner College", "Staten Island"),
+  ("Baruch College", "Manhattan"),
+  ("York College", "Queens"),
   ("Select the school", "NULL");
 
 

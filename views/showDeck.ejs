@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title></title>
+    <link rel="stylesheet" type="text/css" href="background.css">
   </head>
   <body>
     <% include partials/header %>
@@ -66,9 +67,13 @@
         <tr>
           <form class="" action="/showDeck/updateCard" method="post">
             <td><%= i+1 %></td>
+            <td><textarea rows="2" cols="40" name="cardName" value="<%= key[i].cardName %>"><%= key[i].cardName %></textarea></td>
+            <td><textarea rows="4" cols="50" name="cardDescription" value="<%= key[i].description %>"><%= key[i].description %></textarea></td>
+            <td><button type="submit" name="cardId" value="<%= key[i].cardId %>">Save</button></td>
+            <!-- <td><%= i+1 %></td>
             <td><input type="text" name="cardName" value="<%= key[i].cardName %>"></td>
             <td><input type="text" name="cardDescription" value="<%= key[i].description %>"></td>
-            <td><button type="submit" name="cardId" value="<%= key[i].cardId %>">Save</button></td>
+            <td><button type="submit" name="cardId" value="<%= key[i].cardId %>">Save</button></td> -->
 
           </form>
 
