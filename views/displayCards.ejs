@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title></title>
+    <link rel="stylesheet" type="text/css" href="background.css">
   </head>
   <body>
     <% include partials/header %>
@@ -16,9 +17,9 @@
         <th>Description</th>
       </tr>
 
-      <% for(let i = 1; i < key.length; i++) {%>
+      <% for(let i = 0; i < key.length; i++) {%>
         <tr>
-          <td><%= i %></td>
+          <td><%= i+1 %></td>
           <td><%= key[i].cardName %></td>
           <td><%= key[i].description %></td>
          </tr>

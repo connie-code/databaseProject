@@ -87,10 +87,31 @@ app.post("/register", function(req, res){
     let username = req.body.username;
     let email = req.body.email;
     console.log(username, email);
-    let q = "INSERT INTO user(username, email) VALUES ('" + username + "', '" + email + "')";
+    let q = "SELECT username FROM user WHERE username = '" + username + "'";
+    // connection.query(q, function(err, results){
+    //   console.log("hi, reached the username area");
+    //   if(err) throw err;
+    //   if(results[0]) {
+    //     res.redirect('/dashboard');
+    //     console.log(results);
+    //   }
+    // });
+    //
+    // q = "SELECT email FROM user WHERE email = '" + email + "'";
+    // connection.query(q, function(err, results){
+    //   console.log("hi, reached the email area");
+    //   if(err) throw err;
+    //   if(results[0]) {
+    //     res.redirect('/dashboard');
+    //     console.log(results);
+    //   }
+    // });
+
+    q = "INSERT INTO user(username, email) VALUES ('" + username + "', '" + email + "')";
     connection.query(q, function(err, results){
       if(err) throw err;
       console.log(results[0]);
+
       // res.redirect("/dashboard");
     });
     q = "SELECT userId, username, email FROM user WHERE username = '" + username + "' AND email = '" + email + "'";

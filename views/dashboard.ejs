@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="background.css">
   </head>
   <body>
     <% include partials/header %>
@@ -41,7 +42,7 @@
                 <td><button type="submit" value="<%= key[i].deckId %>" name="edit">Edit</button></td>
               </form>
               <form class="" action="/dashboard/deleteDeck" method="post">
-                <td><button type="submit" value="<%= key[i].deckId %>" name="delete">Delete</button></td>
+              <td><button type="submit" value="<%= key[i].deckId %>" name="delete">Delete</button></td>
               </form>
 
             <p></p>
