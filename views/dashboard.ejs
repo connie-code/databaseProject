@@ -31,12 +31,10 @@
       <button type="submit" name="createDeck">Create</button>
     </form>
 
-    <!-- <form class="" action="/showDeck" method="GET"> -->
-      <!-- <ol> -->
       <table>
         <% for(let i = 0; i < key.length; i++) {%>
           <tr>
-              <!-- <td><button type="submit" value="<%= key[i].deckId %>" name="deck"> <%= key[i].name %> </button></td> -->
+
               <td> <%= key[i].name %> </td>
               <form class="" action="/showDeck" method="GET">
                 <td><button type="submit" value="<%= key[i].deckId %>" name="edit">Edit</button></td>
@@ -51,8 +49,6 @@
         <% } %>
       </table>
 
-      <!-- </ol> -->
-    <!-- </form> -->
 
   </body>
 </html>
