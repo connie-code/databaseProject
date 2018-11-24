@@ -9,18 +9,20 @@ app.use(Parser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 app.use(express.static(__dirname + "/public")); // Use public folder to access css
 
+// To give acccess to user quizbase run ALTER USER 'quizbase'@'localhost' IDENTIFIED WITH mysql_native_password BY ''
 var connection = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
+    user: 'quizbase',
+    password: '',
     database: 'quizbase'
 });
 
 // Check if server is working properly
 connection.connect(function(error) {
-    if(!!error) {
-        console.log("Error connecting to database");
+    if(error) {
+        console.log(error);
     } else {
-        console.log("Connected");
+        console.log("Database connection successful (-:");
     }
 });
 

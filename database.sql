@@ -51,6 +51,7 @@ CREATE TABLE cards(
 
 INSERT INTO user(username, password)
 VALUES ("Connie", "people123"),
+  ("quizbase", "quizbase"),
   ("Friend", "people123"),
   ("Cindy", "people123"),
   ("John", "people123");
