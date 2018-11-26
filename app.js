@@ -3,6 +3,7 @@ var express = require('express');
 var mysql = require('mysql');
 var Parser = require("body-parser");
 var app = express();
+var open = require('open');
 
 app.use(Parser.urlencoded({extended: true}));
 // Will look for a file in local directory called "views" and for a file with ".ejs" at the end
@@ -96,12 +97,11 @@ app.post("/register", function(req, res){
       if(results[0]){
         console.log("This username is taken");
         res.redirect('/');
-      }else{
+      } else {
         q = "INSERT INTO user(username, password) VALUES ('" + username + "', '" + password + "')";
         connection.query(q, function(err, results){
           if(err) throw err;
           console.log(results);
-
         });
         q = "SELECT userId, username, password FROM user WHERE username = '" + username + "' AND password = '" + password + "'";
         connection.query(q, function(err, results){
@@ -385,6 +385,9 @@ app.post("/signout", function(req, res){
 app.get('*', function(req, res) {
     res.redirect('/dashboard');
 });
+
+// To automatically open home page on browser
+open('http://localhost:8080');
 
 //bottom
 app.listen(8080, function() {
