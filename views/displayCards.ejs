@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="background.css">
+  </head>
+  <body>
+
+    <% include partials/header %>
+<<<<<<< HEAD
+    <div class="balance">balance</div>
+    <div class="balance">balance</div>
+
+    <h1 class="pageHeading"><%= deckInfo[0].name %></h1>
+    <h4 class="leftAlign creator">Creator: <%= deckInfo[0].username %></h4>
+=======
+
+    <div class="balance">balance</div>
+    
+    <h1><%= deckInfo[0].name %></h1>
+    <h4>Creator: <%= deckInfo[0].username %></h4>
+>>>>>>> d886548356c112568caa85e4793dd1a5538fcfb6
+
+    <table class="leftAlign cardTable" border="1">
+      <tr>
+        <th>#</th>
+        <th>Card Name</th>
+        <th>Description</th>
+      </tr>
+
+      <% for(let i = 0; i < key.length; i++) {%>
+        <tr>
+          <td class="cardDetails"><%= i+1 %></td>
+          <td class="cardDetails"><%= key[i].cardName %></td>
+          <td class="cardDetails"><%= key[i].description %></td>
+         </tr>
+      <% } %>
+    </table>
+
+  </body>
+</html>
