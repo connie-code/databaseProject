@@ -1,0 +1,32 @@
+<!-- displays users profile & ther decks of cards -->
+<html lang="en" dir="ltr">
+  <head>
+    <title>Profile</title>
+    <link rel="stylesheet" type="text/css" href="background.css">
+  </head>
+  <body>
+    <% include partials/header %>
+    <!-- <h1>Profile</h1> -->
+    <h1> <%= name %> </h1>
+    <form class="" action="index.html" method="post">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Deck Names</th>
+            <th>Creation Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(let i = 0; i < key.length; i++) {%>
+            <tr>
+              <td><%= i+1 %></td>
+              <td><button type="button" name="deckname" value = "<%= key[i].deckId %>"><%= key[i].name %></button></td>
+              <td><%= key[i].creationDate %></td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </form>
+  </body>
+</html>

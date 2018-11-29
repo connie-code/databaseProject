@@ -12,6 +12,7 @@ app.use(express.static(__dirname + "/public")); // Use public folder to access c
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
+    // password: 'yourDataBasePassword',
     database: 'quizbase'
 });
 
@@ -313,7 +314,7 @@ app.get("/displayDecks", function(req, res){
   else{
     let q = "SELECT topicName FROM topic WHERE topicId = " + topicID;
     console.log(topicID);
-    let d = "SELECT deckId, name FROM deck WHERE topicId = " + topicID;
+    let d = "SELECT userId, deckId, name FROM deck WHERE topicId = " + topicID;
     let result=[];
     connection.query(q, function(err, results){
       if(err) throw err;
@@ -322,7 +323,15 @@ app.get("/displayDecks", function(req, res){
 
       connection.query(d, function(err, results){
         if(err) throw err;
-        results.forEach(function(deck) {result.push(deck);}) //deck is object
+        // results.forEach(function(deck) {result.push(deck);}) //deck is object
+        for(let i = 0; i < results.length; i++){
+          if(signedInUser.userID === results[i].userId){ //make sures to display decks of cards other than their own
+            continue;
+          }
+          else{
+            result.push(results[i]);
+          }
+        }
         // results.forEach(deck => {result.push(deck);})
         console.log(result);
         res.render("displayDecks", {key: result});
@@ -337,7 +346,7 @@ app.get("/displayCards", function(req, res){
     res.redirect("/dashboard");
   }
   else{
-    let q = "SELECT name, user.username FROM deck JOIN user ON user.userId = deck.userId WHERE deckId =" + deckID;
+    let q = "SELECT name, user.userId, user.username FROM deck JOIN user ON user.userId = deck.userId WHERE deckId =" + deckID;
     let r = "SELECT cardName, description FROM cards WHERE deckId = " + deckID;
     let deckInfo = []
     let result = [];
@@ -357,6 +366,31 @@ app.get("/displayCards", function(req, res){
     });
   }
 
+});
+
+app.get("/profile", function(req, res){
+  let userID = req.query.creator;
+  // let q = "SELECT * FROM deck WHERE userId = " + userID;
+  // let r = "SELECT * FROM user WHERE userId = " + userID;
+  // let result = [];
+  // connection.query(q, function(err, results){
+  //   if (err) throw err;
+  //   console.log(results);
+  //   res.render("profile");
+  // });
+  let q = "SELECT name, deckId, creationDate FROM deck WHERE userId = " + userID;
+  // let q = "SELECT * FROM deck WHERE userId = " + userID;
+  let result = [];
+  let name = "SELECT username FROM user WHERE userId = " + userID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+    results.forEach(function(deck) {result.push(deck);})
+    connection.query(name, function(err, results){
+      if(err) throw err;
+      res.render("profile", {name: results[0].username, key: result});
+    });
+  });
+  // res.render("profile");
 });
 
 app.post("/dashboard/deleteDeck", function(req, res){
