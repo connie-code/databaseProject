@@ -1,0 +1,20 @@
+<!-- Displays the classes from the site except the ones the user is already in -->
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="background.css">
+  </head>
+  <body>
+    <% include partials/header %>
+    <h1><%= key[0] %></h1>
+    <form class="" action="/showClass" method="GET">
+      <ul>
+        <!-- NOTE TO SELF: work on showClass content page -->
+        <% for(let i = 1; i < key.length; i++) {%>
+          <li> <button type="submit" value="<%= key[i].classId %>" name="class"> <%= key[i].name %> </button> </li>
+        <% } %>
+      </ul>
+    </form>
+  </body>
+</html>

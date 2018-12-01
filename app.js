@@ -369,6 +369,37 @@ app.get("/displayCards", function(req, res){
 
 });
 
+app.get("/classes", function(req, res){ //passes the data needed to display the classes from the entire site except the ones the user is already in
+  let topicID = req.query.box;
+  if(topicID === undefined){
+    res.redirect("/dashboard");
+  }
+  else{
+    let q = "SELECT topicName FROM topic WHERE topicId = " + topicID;
+    console.log(topicID);
+    let c = "SELECT ownerId, classId, name FROM class WHERE topicId = " + topicID;
+    let result=[];
+    connection.query(q, function(err, results){
+      if(err) throw err;
+      result.push(results[0].topicName);
+
+      connection.query(c, function(err, results){
+        if(err) throw err;
+        for(let i = 0; i < results.length; i++){
+          if(signedInUser.userID === results[i].ownerId){
+            continue;
+          }
+          else{
+            result.push(results[i]);
+          }
+        }
+
+        res.render("displayClasses", {key: result});
+      });
+    });
+  }
+});
+
 app.get("/profile", function(req, res){
   let userID = req.query.creator;
   // let q = "SELECT * FROM deck WHERE userId = " + userID;
