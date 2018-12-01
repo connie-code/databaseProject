@@ -50,12 +50,14 @@ CREATE TABLE cards(
 
 CREATE TABLE class(
   classId INT PRIMARY KEY AUTO_INCREMENT,
+  ownerId INT,
   name VARCHAR(255),
   topicId INT,
   description VARCHAR(1000),
-  FOREIGN KEY(topicId) REFERENCES topic(topicId)
+  FOREIGN KEY(topicId) REFERENCES topic(topicId),
+  FOREIGN KEY(ownerId) REFERENCES user(userId)
 );
-
+--
 CREATE TABLE members(
   userId INT,
   classId INT,
@@ -68,7 +70,7 @@ CREATE TABLE request(
   classId INT,
   FOREIGN KEY(userId) REFERENCES user(userId),
   FOREIGN KEY(classId) REFERENCES class(classId)
-)
+);
 
 INSERT INTO user(username, password)
 VALUES ("Connie", "people123"),
@@ -149,3 +151,21 @@ INSERT INTO cards(deckId, cardName, description)
 VALUES (2, "Chromosomes", "asdfghjkl"),
   (2, "Cell", "asdfghjkl"),
   (2, "Mitochondria", "asdfghjkl");
+
+
+INSERT INTO class(ownerId, name, topicId, description)
+VALUES (3, "Data Science", 3, "Resources for individuals"),
+  (4, "Chemistry 101", 2, "From Atoms to Chemical"),
+  (1, "Differentials", 1, "Derivatives 2.0 lol");
+
+INSERT INTO members(userId, classId)
+VALUES (1, 1),
+  (1, 2),
+  (4, 1),
+  (3, 2),
+  (2, 1),
+  (4, 3);
+
+INSERT INTO request(userId, classId)
+VALUES (1, 3),
+  (3, 1);
