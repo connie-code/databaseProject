@@ -8,8 +8,9 @@
   <body>
     <% include partials/header %>
     <h1>Dashboard</h1>
-
-    <table>
+    
+    <label for="decks">Explore Decks: </label>
+    <table id="decks">
       <table border="1">
       <tbody>
         <tr>
@@ -25,6 +26,26 @@
         </tr>
       </tbody>
     </table>
+
+    <!-- Explore Classes -->
+    <label for="classes">Explore Classes: </label>
+    <table id="classes">
+      <table border="1">
+      <tbody>
+        <tr>
+          <form class="" action="/classes" method="get">
+            <td><button type="submit" name="box" value="2">Science</button></td>
+            <td><button type="submit" name="box" value="1">Math</button></td>
+            <td><button type="submit" name="box" value="3">Computer Science</button></td>
+            <td><button type="submit" name="box" value="5">Art</button></td>
+            <td><button type="submit" name="box" value="7">Music</button></td>
+            <td><button type="submit" name="box" value="6">History</button></td>
+            <td><button type="submit" name="box" value="4">English</button></td>
+          </form>
+        </tr>
+      </tbody>
+    </table>
+
 
     <h3>Decks: </h3>
     <form class="" action="/createDeck" method="post">

@@ -48,6 +48,27 @@ CREATE TABLE cards(
   FOREIGN KEY(deckId) REFERENCES deck(deckId)
 );
 
+CREATE TABLE class(
+  classId INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255),
+  topicId INT,
+  description VARCHAR(1000),
+  FOREIGN KEY(topicId) REFERENCES topic(topicId)
+);
+
+CREATE TABLE members(
+  userId INT,
+  classId INT,
+  FOREIGN KEY(userId) REFERENCES user(userId),
+  FOREIGN KEY(classId) REFERENCES class(classId)
+);
+
+CREATE TABLE request(
+  userId INT,
+  classId INT,
+  FOREIGN KEY(userId) REFERENCES user(userId),
+  FOREIGN KEY(classId) REFERENCES class(classId)
+)
 
 INSERT INTO user(username, password)
 VALUES ("Connie", "people123"),
