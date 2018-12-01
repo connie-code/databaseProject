@@ -13,6 +13,7 @@ var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     // password: 'yourDataBasePassword',
+    password: "Noosa11",
     database: 'quizbase'
 });
 
@@ -378,13 +379,14 @@ app.get("/profile", function(req, res){
   //   console.log(results);
   //   res.render("profile");
   // });
-  let q = "SELECT name, deckId, creationDate FROM deck WHERE userId = " + userID;
+  let q = "SELECT name, deckId, DATE_FORMAT(creationDate, '%b. %d, %Y') AS CD FROM deck WHERE userId = " + userID;
   // let q = "SELECT * FROM deck WHERE userId = " + userID;
   let result = [];
   let name = "SELECT username FROM user WHERE userId = " + userID;
+  let created ="SELECT DATE(creationDate) AS CD FROM deck WHERE userId = " + userID;
   connection.query(q, function(err, results){
     if(err) throw err;
-    results.forEach(function(deck) {result.push(deck);})
+    results.forEach(function(deck) {result.push(deck);});
     connection.query(name, function(err, results){
       if(err) throw err;
       res.render("profile", {name: results[0].username, key: result});
