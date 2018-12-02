@@ -21,23 +21,28 @@ CREATE TABLE user(
   password VARCHAR(255) NOT NULL
 );
 
+CREATE TABLE class(
+  classId INT PRIMARY KEY AUTO_INCREMENT,
+  ownerId INT,
+  name VARCHAR(255),
+  topicId INT,
+  description VARCHAR(1000),
+  FOREIGN KEY(topicId) REFERENCES topic(topicId),
+  FOREIGN KEY(ownerId) REFERENCES user(userId)
+);
+
 CREATE TABLE deck(
   deckId INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(255),
-  userId INT,
+  classId INT, -- For class desks
+  userId INT, -- For user desks
   topicId INT DEFAULT 8,
   creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   schoolId INT,
   foreign key(userId) references user(userId),
+  foreign key(classId) references class(classId),
   foreign key(topicId) references topic(topicId),
   foreign key(schoolId) references school(schoolId)
-);
-
-CREATE TABLE profile(
-  userId INT,
-  deckId INT,
-  FOREIGN KEY(userId) REFERENCES user(userId),
-  FOREIGN KEY(deckId) REFERENCES deck(deckId)
 );
 
 CREATE TABLE cards(
@@ -48,16 +53,13 @@ CREATE TABLE cards(
   FOREIGN KEY(deckId) REFERENCES deck(deckId)
 );
 
-CREATE TABLE class(
-  classId INT PRIMARY KEY AUTO_INCREMENT,
-  ownerId INT,
-  name VARCHAR(255),
-  topicId INT,
-  description VARCHAR(1000),
-  FOREIGN KEY(topicId) REFERENCES topic(topicId),
-  FOREIGN KEY(ownerId) REFERENCES user(userId)
+CREATE TABLE profile(
+  userId INT,
+  deckId INT,
+  FOREIGN KEY(userId) REFERENCES user(userId),
+  FOREIGN KEY(deckId) REFERENCES deck(deckId)
 );
---
+
 CREATE TABLE members(
   userId INT,
   classId INT,
@@ -152,11 +154,22 @@ VALUES (2, "Chromosomes", "asdfghjkl"),
   (2, "Cell", "asdfghjkl"),
   (2, "Mitochondria", "asdfghjkl");
 
-
 INSERT INTO class(ownerId, name, topicId, description)
 VALUES (3, "Data Science", 3, "Resources for individuals"),
   (4, "Chemistry 101", 2, "From Atoms to Chemical"),
   (1, "Differentials", 1, "Derivatives 2.0 lol");
+
+INSERT INTO deck(name, classId, topicId, creationDate)
+VALUES ("Kernels", 1, 3, CURDATE()),
+  ("Data Science", 1, 3, DATE '2018-05-15');
+
+INSERT INTO cards(deckId, cardName, description)
+VALUES (13, "Program Exucation", "To load softwarem allocate resources, run & terminate when finished"),
+  (13, "Disc access", "To read from or write to backing storage"),
+  (13, "Interrupts", "For components such as the mouse to request servicing by the CPU"),
+  (14, "Why do we need data?", "To make a more convincing argument & to predict the future"),
+  (14, "The metric System", "K-H-D-U-d-c-m"),
+  (14, "Key Error", "Error for when something can't be found in ca dictionary");
 
 INSERT INTO members(userId, classId)
 VALUES (1, 1),
