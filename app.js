@@ -315,7 +315,7 @@ app.get("/displayDecks", function(req, res){
   else{
     let q = "SELECT topicName FROM topic WHERE topicId = " + topicID;
     console.log(topicID);
-    let d = "SELECT userId, deckId, name FROM deck WHERE topicId = " + topicID;
+    let d = "SELECT classId, userId, deckId, name FROM deck WHERE topicId = " + topicID;
     let result=[];
     connection.query(q, function(err, results){
       if(err) throw err;
@@ -326,6 +326,9 @@ app.get("/displayDecks", function(req, res){
         if(err) throw err;
         // results.forEach(function(deck) {result.push(deck);}) //deck is object
         for(let i = 0; i < results.length; i++){
+          if(results[i].classId){
+            continue;
+          }
           if(signedInUser.userID === results[i].userId){ //make sures to display decks of cards other than their own
             continue;
           }
@@ -376,7 +379,7 @@ app.get("/classes", function(req, res){ //passes the data needed to display the 
   }
   else{
     let q = "SELECT topicName FROM topic WHERE topicId = " + topicID;
-    console.log(topicID);
+    console.log("class topic" , topicID);
     let c = "SELECT ownerId, classId, name FROM class WHERE topicId = " + topicID;
     let result=[];
     connection.query(q, function(err, results){
@@ -395,6 +398,29 @@ app.get("/classes", function(req, res){ //passes the data needed to display the 
         }
 
         res.render("displayClasses", {key: result});
+      });
+    });
+  }
+});
+
+app.get("/displayClass", function(req, res){
+  let classID = req.query.class;
+  console.log("classID: ", classID);
+  if(classID === undefined){
+    res.redirect("/dashboard");
+  }
+  else{
+    let q = "SELECT * FROM class WHERE classId = " + classID;
+    let d = "SELECT * FROM deck WHERE classId = " + classID;
+    let result = [];
+    let classMaterial = [];
+    connection.query(q, function(err, results){
+      if(err) throw err;
+      results.forEach(function(info) {result.push(info);})
+      connection.query(d, function(err, results){
+        if(err) throw err;
+        results.forEach(function(material) {classMaterial.push(material);})
+        res.render("displayClass", {classInfo: result, key: classMaterial});
       });
     });
   }

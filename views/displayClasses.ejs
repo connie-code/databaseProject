@@ -8,9 +8,9 @@
   <body>
     <% include partials/header %>
     <h1><%= key[0] %></h1>
-    <form class="" action="/showClass" method="GET">
+    <form class="" action="/displayClass" method="GET">
       <ul>
-        <!-- NOTE TO SELF: work on showClass content page -->
+        <!-- NOTE TO SELF: work on displayClass content page -->
         <% for(let i = 1; i < key.length; i++) {%>
           <li> <button type="submit" value="<%= key[i].classId %>" name="class"> <%= key[i].name %> </button> </li>
         <% } %>

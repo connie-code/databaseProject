@@ -1,0 +1,20 @@
+<!-- Displays the class description, name, decks, members -->
+<html lang="en" dir="ltr">
+  <head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="background.css">
+  </head>
+  <body>
+    <% include partials/header %>
+    <h1>Class: <%= classInfo[0].name %></h1>
+    <h4><em>Description: <%= classInfo[0].description %></em></h4>
+
+    <form class="" action="/" method="GET">
+      <ol>
+        <% for(let i = 0; i < key.length; i++) {%>
+          <li> <button type="submit" value="<%= key[i].deckId %>" name="deck"> <%= key[i].name %> </button> </li>
+        <% } %>
+      </ol>
+    </form>
+  </body>
+</html>
