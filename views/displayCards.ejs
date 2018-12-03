@@ -1,22 +1,40 @@
 <!-- shows the cards of the deck selected and the creator -->
 <html lang="en" dir="ltr">
   <head>
-    <meta charset="utf-8">
-    <title></title>
-    <link rel="stylesheet" type="text/css" href="background.css">
-  </head>
-  <body>
+
+  <meta charset="utf-8">
+  <title>Display Card</title>
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <!-- <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN"crossorigin="anonymous"> -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <!-- <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"> -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="background.css">
+
+</head>
+
+<body>
+
     <% include partials/header %>
-    <h1><%= deckInfo[0].name %></h1>
-    <form class="" action="/profile" method="GET">
-      <h4>
+    <div class="balance">balance</div>
+    <div class="balance">balance</div>
+
+    <h1 class="pageHeading"><%= deckInfo[0].name %></h1>
+    <div class="balance">balance</div>
+
+    <form class="creator" action="/profile" method="GET">
+      <h4 class="leftAlign creator">
         Creator:
-        <button type="submit" name="creator" value="<%= deckInfo[0].userId %>"><%= deckInfo[0].username %></button>
+        <button class="creator" type="submit" name="creator" value="<%= deckInfo[0].userId %>"><%= deckInfo[0].username %></button>
       </h4>
     </form>
+    <div class="balance">balance</div>
     <!-- <h4>Creator: <%= deckInfo[0].username %></h4> -->
 
-    <table border="1">
+    <table class="leftAlign cardTable" border="1">
       <tr>
         <th>#</th>
         <th>Card Name</th>
@@ -25,13 +43,11 @@
 
       <% for(let i = 0; i < key.length; i++) {%>
         <tr>
-          <td><%= i+1 %></td>
-          <td><%= key[i].cardName %></td>
-          <td><%= key[i].description %></td>
+          <td class="cardDetails"><%= i+1 %></td>
+          <td class="cardDetails"><%= key[i].cardName %></td>
+          <td class="cardDetails"><%= key[i].description %></td>
          </tr>
       <% } %>
-
-
     </table>
 
   </body>

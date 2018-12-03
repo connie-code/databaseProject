@@ -1,8 +1,8 @@
-// Need to npm install --save express, mysql, ejs, and body-parser
 var express = require('express');
 var mysql = require('mysql');
 var Parser = require("body-parser");
 var app = express();
+var open = require('open');
 
 app.use(Parser.urlencoded({extended: true}));
 // Will look for a file in local directory called "views" and for a file with ".ejs" at the end
@@ -11,18 +11,18 @@ app.use(express.static(__dirname + "/public")); // Use public folder to access c
 
 var connection = mysql.createConnection({
     host: 'localhost',
-    user: 'root',
+    user: 'quizbase',
     // password: 'yourDataBasePassword',
-    password: "Noosa11",
+    password: '',
     database: 'quizbase'
 });
 
 // Check if server is working properly
 connection.connect(function(error) {
-    if(!!error) {
-        console.log("Error connecting to database");
+    if(error) {
+        console.log(error);
     } else {
-        console.log("Connected");
+        console.log("Database Connection Successful (-:");
     }
 });
 
@@ -101,7 +101,6 @@ app.post("/register", function(req, res){
         connection.query(q, function(err, results){
           if(err) throw err;
           console.log(results);
-
         });
         q = "SELECT userId, username, password FROM user WHERE username = '" + username + "' AND password = '" + password + "'";
         connection.query(q, function(err, results){
@@ -476,6 +475,9 @@ app.post("/signout", function(req, res){
 app.get('*', function(req, res) {
     res.redirect('/dashboard');
 });
+
+// To automatically open home page on browser
+open('http://localhost:8080');
 
 //bottom
 app.listen(8080, function() {
