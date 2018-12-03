@@ -7,14 +7,20 @@
   <body>
     <% include partials/header %>
     <h1>Class: <%= classInfo[0].name %></h1>
-    <h4><em>Description: <%= classInfo[0].description %></em></h4>
-
-    <form class="" action="/" method="GET">
-      <ol>
-        <% for(let i = 0; i < key.length; i++) {%>
-          <li> <button type="submit" value="<%= key[i].deckId %>" name="deck"> <%= key[i].name %> </button> </li>
-        <% } %>
-      </ol>
-    </form>
+    <% if(members.indexOf(user) === -1) {%>
+      <form class="" action="index.html" method="post">
+        <label for="request">Request to Join Class: </label><button type="submit" name="button" id="request">Request</button>
+      </form>
+      <h4><em>Description: <%= classInfo[0].description %></em></h4>
+    <% } else {%>
+      <h4><em>Description: <%= classInfo[0].description %></em></h4>
+      <form class="" action="/displayClass/displayCards" method="GET">
+        <ol>
+          <% for(let i = 0; i < key.length; i++) {%>
+            <li> <button type="submit" value="<%= key[i].deckId %>" name="deck"> <%= key[i].name %> </button> </li>
+          <% } %>
+        </ol>
+      </form>
+    <% } %>
   </body>
 </html>

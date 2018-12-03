@@ -372,6 +372,30 @@ app.get("/displayCards", function(req, res){
 
 });
 
+app.get("/showClasses", function(req,res){ //coming from the headers
+  let userID = signedInUser.userID;
+  if(userID === undefined){
+    res.redirect("/dashboard");
+  }
+  else{
+    let q = "SELECT ownerId, name FROM class WHERE ownerId = " + userID;
+    let m = "SELECT userId, class.name, classId FROM members JOIN class ON class.classId = members.classId WHERE userId = " + userID;
+    result = [];
+    let joined = [];
+    connection.query(q, function(err, results){
+      if(err) throw err;
+      console.log(results);
+      results.forEach(function(own) {result.push(own);})
+      connection.query(m, function(err, results){
+        if(err) throw err;
+        console.log(results);
+        results.forEach(function(partOf) {joined.push(partOf);})
+        res.render("showClasses", {own: result, joined: joined});
+      });
+    });
+  }
+});
+
 app.get("/classes", function(req, res){ //passes the data needed to display the classes from the entire site except the ones the user is already in
   let topicID = req.query.box;
   if(topicID === undefined){
@@ -389,14 +413,13 @@ app.get("/classes", function(req, res){ //passes the data needed to display the 
       connection.query(c, function(err, results){
         if(err) throw err;
         for(let i = 0; i < results.length; i++){
-          if(signedInUser.userID === results[i].ownerId){
+          if(signedInUser.userID === results[i].ownerId){ //makes sure to only display the classes that you don't own
             continue;
           }
           else{
             result.push(results[i]);
           }
         }
-
         res.render("displayClasses", {key: result});
       });
     });
@@ -412,19 +435,53 @@ app.get("/displayClass", function(req, res){
   else{
     let q = "SELECT * FROM class WHERE classId = " + classID;
     let d = "SELECT * FROM deck WHERE classId = " + classID;
+    let c = "SELECT * FROM members WHERE classId = " + classID;
     let result = [];
     let classMaterial = [];
+    let members = [];
     connection.query(q, function(err, results){
       if(err) throw err;
       results.forEach(function(info) {result.push(info);})
       connection.query(d, function(err, results){
         if(err) throw err;
         results.forEach(function(material) {classMaterial.push(material);})
-        res.render("displayClass", {classInfo: result, key: classMaterial});
+        connection.query(c, function(err, results){
+          if(err) throw err;
+          // results.forEach(function(mem) {members.push(mem);})
+          for(let i = 0; i < results.length; i++){
+            members.push(results[i].userId);
+          }
+          console.log(members);
+          res.render("displayClass", {classInfo: result, key: classMaterial, user: signedInUser.userID, members: members});
+        });
+
       });
     });
   }
 });
+
+// app.get("/displayClass/displayCards", function(req, res){
+//   let deckID = req.query.deck;
+//   if(deckID === undefined){
+//     res.redirect("/dashboard");
+//   }
+//   else{
+//     let q = "SELECT class.name, deck.classId FROM class JOIN deck ON class.classId = deck.classId WHERE deckId = " + deckID;
+//     let r = "SELECT cardName, description FROM cards WHERE deckId = " + deckID;
+//     let deckInfo = [];
+//     let result = [];
+//     connection.query(q, function(err, results){
+//       if(err) throw err;
+//       results.forEach(function(deck) {deckInfo.push(deck);})
+//       connection.query(r, function(err, results){
+//         if(err) throw err;
+//         results.forEach(function(card) {result.push(card);})
+//
+//         res.render("display")
+//       });
+//     });
+//   }
+// });
 
 app.get("/profile", function(req, res){
   let userID = req.query.creator;
