@@ -372,23 +372,23 @@ app.get("/displayCards", function(req, res){
 
 });
 
-app.get("/showClasses", function(req,res){ //coming from the headers
+app.get("/showClasses", function(req,res){ //coming from the headers | shows the classes you created and the classes you joined
   let userID = signedInUser.userID;
   if(userID === undefined){
     res.redirect("/dashboard");
   }
   else{
-    let q = "SELECT ownerId, name FROM class WHERE ownerId = " + userID;
-    let m = "SELECT userId, class.name, classId FROM members JOIN class ON class.classId = members.classId WHERE userId = " + userID;
+    let q = "SELECT classId, ownerId, name FROM class WHERE ownerId = " + userID;
+    let m = "SELECT userId, class.name, class.classId FROM members JOIN class ON class.classId = members.classId WHERE userId = " + userID;
     result = [];
     let joined = [];
     connection.query(q, function(err, results){
       if(err) throw err;
-      console.log(results);
+      console.log("results1", results);
       results.forEach(function(own) {result.push(own);})
       connection.query(m, function(err, results){
         if(err) throw err;
-        console.log(results);
+        console.log("results2", results);
         results.forEach(function(partOf) {joined.push(partOf);})
         res.render("showClasses", {own: result, joined: joined});
       });
@@ -413,7 +413,7 @@ app.get("/classes", function(req, res){ //passes the data needed to display the 
       connection.query(c, function(err, results){
         if(err) throw err;
         for(let i = 0; i < results.length; i++){
-          if(signedInUser.userID === results[i].ownerId){ //makes sure to only display the classes that you don't own
+          if(signedInUser.userID !== results[i].ownerId){ //makes sure to only display the classes that you don't own!!! So you get the option to request to join or not
             continue;
           }
           else{
@@ -466,22 +466,47 @@ app.get("/displayClass", function(req, res){
 //     res.redirect("/dashboard");
 //   }
 //   else{
-//     let q = "SELECT class.name, deck.classId FROM class JOIN deck ON class.classId = deck.classId WHERE deckId = " + deckID;
+//     let q = "SELECT deck.name AS deckName, class.name AS className, deck.classId FROM class JOIN deck ON class.classId = deck.classId WHERE deckId = " + deckID;
 //     let r = "SELECT cardName, description FROM cards WHERE deckId = " + deckID;
 //     let deckInfo = [];
 //     let result = [];
 //     connection.query(q, function(err, results){
 //       if(err) throw err;
+//       console.log("deckInfo: ", results)
 //       results.forEach(function(deck) {deckInfo.push(deck);})
 //       connection.query(r, function(err, results){
 //         if(err) throw err;
 //         results.forEach(function(card) {result.push(card);})
 //
-//         res.render("display")
+//         res.render("class", {deckInfo: deckInfo, key: result});
 //       });
 //     });
 //   }
 // });
+
+app.get("/displayClassDeck", function(req,res){
+  let deckID = req.query.deck;
+  if(deckID === undefined){
+    res.redirect("/dashboard");
+  }
+  else{
+    let q = "SELECT deck.name AS deckName, class.name AS className, deck.classId FROM class JOIN deck ON class.classId = deck.classId WHERE deckId = " + deckID;
+    let r = "SELECT cardName, description FROM cards WHERE deckId = " + deckID;
+    let deckInfo = [];
+    let result = [];
+    connection.query(q, function(err, results){
+      if(err) throw err;
+      console.log("deckInfo: ", results)
+      results.forEach(function(deck) {deckInfo.push(deck);})
+      connection.query(r, function(err, results){
+        if(err) throw err;
+        results.forEach(function(card) {result.push(card);})
+
+        res.render("displayClassDeck", {deckInfo: deckInfo, key: result});
+      });
+    });
+  }
+});
 
 app.get("/profile", function(req, res){
   let userID = req.query.creator;

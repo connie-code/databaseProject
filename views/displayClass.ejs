@@ -14,7 +14,7 @@
       <h4><em>Description: <%= classInfo[0].description %></em></h4>
     <% } else {%>
       <h4><em>Description: <%= classInfo[0].description %></em></h4>
-      <form class="" action="/displayClass/displayCards" method="GET">
+      <form class="" action="/displayClassDeck" method="GET"> <!-- Deck buttons to display the cards in it -->
         <ol>
           <% for(let i = 0; i < key.length; i++) {%>
             <li> <button type="submit" value="<%= key[i].deckId %>" name="deck"> <%= key[i].name %> </button> </li>
