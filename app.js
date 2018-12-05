@@ -579,9 +579,10 @@ app.post("/request", function(req, res){
     let newDeck = {
       userId: signedInUser.userID,
       classId: classID
-    }
+    };
     connection.query("INSERT INTO request SET ?", newDeck, function(err, results){
       if(err) throw err;
+
     });
     res.redirect("/displayClass1");
   }
@@ -605,6 +606,70 @@ app.post("/removeRequest", function(req, res){
       res.redirect("/displayClass1");
     });
   }
+});
+
+app.get("/showRequests", function(req, res){
+  let userID = signedInUser.userID;
+  if(userID === undefined){
+    res.redirect("/dashboard");
+  }
+  else{
+    let q = "SELECT class.classId, class.name, request.userId FROM class JOIN request ON class.classId = request.classId WHERE class.ownerId = " + userID;
+    let u = "SELECT * FROM user";
+    let r = [];
+    let userInfo = [];
+    connection.query(q, function(err, results){
+      if(err) throw err;
+      console.log(results);
+      results.forEach(function(request) {r.push(request);})
+      console.log("r: ", r);
+      connection.query(u, function(err, results){
+        if(err) throw err;
+
+        // results.forEach(function(key) {userInfo.push(key);})
+        for(let i = 0; i < r.length; i++){
+          for(let j = 0; j < results.length; j++){
+            if(results[j].userId === r[i].userId){
+              userInfo.push({username: results[j].username, classId: r[i].classId, className: r[i].name, userId: r[i].userId});
+            }
+          }
+        }
+        console.log("User Info: ", userInfo);
+        res.render("request", {key: userInfo});
+      });
+      // res.render("request", {key: r});
+    });
+  }
+});
+
+app.post("/showRequests/accept", function(req, res){
+  let info = req.body.info;
+  let userID= parseInt(info.slice(0, info.indexOf("#")));
+  let classID = parseInt(info.slice(info.indexOf("#")+1, info.length));
+  console.log(userID, " ", classID);
+  let newMember = {
+    userId: userID,
+    classId: classID
+  };
+  connection.query("INSERT INTO members SET ?", newMember, function(err, results){
+    if(err) throw err;
+  });
+  let q = "DELETE FROM request WHERE classId = " + classID + " AND userId = " + userID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+  });
+  res.redirect("/showRequests");
+});
+
+app.post("/showRequests/ignore", function(req, res){
+  let info = req.body.info;
+  let userID= parseInt(info.slice(0, info.indexOf("#")));
+  let classID = parseInt(info.slice(info.indexOf("#")+1, info.length));
+  let q = "DELETE FROM request WHERE classId = " + classID + " AND userId = " + userID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+  });
+  res.redirect("/showRequests");
 });
 
 app.get("/profile", function(req, res){
