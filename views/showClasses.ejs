@@ -35,10 +35,10 @@
       <% for(let i = 0; i < joined.length; i++) {%>
         <tr>
           <td> <%= joined[i].name %> </td>
-          <form class="" action="/displayClass" method="GET">
+          <form class="" action="/displayClass1" method="GET">
             <td><button type="submit" value="<%= joined[i].classId %>" name="class">Go to Class</button></td>
           </form>
-          <form class="" action="/showClass" method="GET">
+          <form class="" action="/showClasses/leaveClass" method="POST">
             <td><button type="submit" value="<%= joined[i].classId %>" name="leave">Leave</button></td>
           </form>
 

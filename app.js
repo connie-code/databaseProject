@@ -3,6 +3,8 @@ var express = require('express');
 var mysql = require('mysql');
 var Parser = require("body-parser");
 var app = express();
+// var popupS = require('popups');
+
 
 app.use(Parser.urlencoded({extended: true}));
 // Will look for a file in local directory called "views" and for a file with ".ejs" at the end
@@ -26,7 +28,7 @@ connection.connect(function(error) {
     }
 });
 
-let signedInUser = { userID: "0", userName: "", loggedIn: false, currentDeckID: 0, userExist: false};
+let signedInUser = { userID: "0", userName: "", loggedIn: false, currentDeckID: 0, userExist: false, currentClass: 0};
 // let userExist = false;
 
 app.get("/", function(req,res){
@@ -404,58 +406,112 @@ app.get("/classes", function(req, res){ //passes the data needed to display the 
   else{
     let q = "SELECT topicName FROM topic WHERE topicId = " + topicID;
     console.log("class topic" , topicID);
+    // let c = "SELECT ownerId, class.classId, name, userId FROM class JOIN members ON class.classId = members.classId WHERE topicId = " + topicID;
+    let s = "SELECT * FROM members WHERE userId = " + signedInUser.userID;
     let c = "SELECT ownerId, classId, name FROM class WHERE topicId = " + topicID;
     let result=[];
+    let seperate = [];
     connection.query(q, function(err, results){
       if(err) throw err;
       result.push(results[0].topicName);
-
-      connection.query(c, function(err, results){
+      connection.query(s, function(err, results){
         if(err) throw err;
-        for(let i = 0; i < results.length; i++){
-          if(signedInUser.userID !== results[i].ownerId){ //makes sure to only display the classes that you don't own!!! So you get the option to request to join or not
-            continue;
+        results.forEach(function(inClass) {seperate.push(inClass.classId);})
+        connection.query(c, function(err, results){
+          if(err) throw err;
+          console.log("seperate: ", seperate);
+          for(let i = 0; i < results.length; i++){
+            if((signedInUser.userID === results[i].ownerId) || seperate.includes(results[i].classId)){ //makes sure to only display the classes that you don't own or already in!!! So you get the option to request to join or not
+              continue;
+            }
+            else{
+              result.push(results[i]);
+            }
           }
-          else{
-            result.push(results[i]);
-          }
-        }
-        res.render("displayClasses", {key: result});
+          res.render("displayClasses", {key: result});
+        });
       });
+      // connection.query(c, function(err, results){
+      //   if(err) throw err;
+      //   for(let i = 0; i < results.length; i++){
+      //     if((signedInUser.userID === results[i].ownerId)){ //makes sure to only display the classes that you don't own!!! So you get the option to request to join or not
+      //       continue;
+      //     }
+      //     else{
+      //       result.push(results[i]);
+      //     }
+      //   }
+      //   res.render("displayClasses", {key: result});
+      // });
     });
   }
 });
 
-app.get("/displayClass", function(req, res){
-  let classID = req.query.class;
+app.get("/displayClass1", function(req, res){
+  let classID;
+  if(signedInUser.currentClass !== 0) {
+    classID = signedInUser.currentClass;
+    signedInUser.currentClass = 0;
+  } else {
+    classID = req.query.class;
+  }
   console.log("classID: ", classID);
-  if(classID === undefined){
+  if(classID === undefined && signedInUser.currentClass === 0){
     res.redirect("/dashboard");
   }
   else{
     let q = "SELECT * FROM class WHERE classId = " + classID;
     let d = "SELECT * FROM deck WHERE classId = " + classID;
     let c = "SELECT * FROM members WHERE classId = " + classID;
+    let r = "SELECT * FROM request WHERE classId = " + classID;
+    let requested = false;
     let result = [];
     let classMaterial = [];
     let members = [];
     connection.query(q, function(err, results){
       if(err) throw err;
+      console.log("classInfo: ", results);
       results.forEach(function(info) {result.push(info);})
       connection.query(d, function(err, results){
         if(err) throw err;
+        console.log("key: ", results);
         results.forEach(function(material) {classMaterial.push(material);})
         connection.query(c, function(err, results){
           if(err) throw err;
+          console.log("members: ", results);
           // results.forEach(function(mem) {members.push(mem);})
           for(let i = 0; i < results.length; i++){
             members.push(results[i].userId);
           }
           console.log(members);
-          res.render("displayClass", {classInfo: result, key: classMaterial, user: signedInUser.userID, members: members});
+          connection.query(r, function(err, results){
+            if(err) throw err;
+            console.log("1request", results);
+            for(let i = 0; i < results.length; i++){
+              if(signedInUser.userID === results[i].userId){
+                requested = true;
+              }
+            }
+            res.render("displayClass", {classInfo: result, key: classMaterial, user: signedInUser.userID, members: members, request: requested});
+          });
+          // res.render("displayClass", {classInfo: result, key: classMaterial, user: signedInUser.userID, members: members});
         });
 
       });
+    });
+  }
+});
+app.post("/showClasses/leaveClass", function(req, res){
+  let classID = req.body.leave;
+  console.log(classID);
+  if(classID === undefined){
+    res.redirect("/dashboard");
+  }
+  else{
+    let q = "DELETE FROM members WHERE classId = " + classID + " AND userId = " + signedInUser.userID;
+    connection.query(q, function(err, results){
+      if(err) throw err;
+      res.redirect("/showClasses");
     });
   }
 });
@@ -504,6 +560,49 @@ app.get("/displayClassDeck", function(req,res){
 
         res.render("displayClassDeck", {deckInfo: deckInfo, key: result});
       });
+    });
+  }
+});
+
+app.post("/request", function(req, res){
+  let classID = req.body.request;
+  // console.log(req.params);
+  signedInUser.currentClass = classID;
+  console.log("request");
+  console.log("hi");
+  console.log("classID: ", classID);
+  if(classID === undefined){
+    res.redirect("/dashboard");
+  }
+  else {
+    // window.alert("Hello! I am an alert box!!");
+    let newDeck = {
+      userId: signedInUser.userID,
+      classId: classID
+    }
+    connection.query("INSERT INTO request SET ?", newDeck, function(err, results){
+      if(err) throw err;
+    });
+    res.redirect("/displayClass1");
+  }
+});
+
+app.post("/removeRequest", function(req, res){
+  let classID = req.body.request;
+  // console.log(req.params);
+  signedInUser.currentClass = classID;
+  // console.log("request");
+  // console.log("hi");
+  // console.log("classID: ", classID);
+  if(classID === undefined){
+    res.redirect("/dashboard");
+  }
+  else {
+    // window.alert("Hello! I am an alert box!!");
+    let q = "DELETE FROM request WHERE classId = " + classID;
+    connection.query(q, function(err, results){
+      if(err) throw err;
+      res.redirect("/displayClass1");
     });
   }
 });

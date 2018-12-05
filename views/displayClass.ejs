@@ -8,10 +8,17 @@
     <% include partials/header %>
     <h1>Class: <%= classInfo[0].name %></h1>
     <% if(members.indexOf(user) === -1) {%>
-      <form class="" action="index.html" method="post">
-        <label for="request">Request to Join Class: </label><button type="submit" name="button" id="request">Request</button>
-      </form>
-      <h4><em>Description: <%= classInfo[0].description %></em></h4>
+      <% if(request === true) {%>
+        <form class="" action="/removeRequest" method="POST">
+          <label for="requests">Click to Unregister:  </label><button type="submit" name="request" value="<%= classInfo[0].classId %>" id="requests">Remove Request</button>
+        </form>
+        <h4><em>Description: <%= classInfo[0].description %></em></h4>
+      <% } else if(request === false) {%>
+        <form class="" action="/request" method="POST">
+          <label for="requests">Register to join class: </label><button type="submit" name="request" value="<%= classInfo[0].classId %>" id="requests">Request</button>
+        </form>
+        <h4><em>Description: <%= classInfo[0].description %></em></h4>
+      <% } %>
     <% } else {%>
       <h4><em>Description: <%= classInfo[0].description %></em></h4>
       <form class="" action="/displayClassDeck" method="GET"> <!-- Deck buttons to display the cards in it -->

@@ -181,5 +181,5 @@ VALUES (1, 1),
   (4, 3);
 
 INSERT INTO request(userId, classId)
-VALUES (1, 3),
+VALUES -- (1, 3),
   (3, 1);
