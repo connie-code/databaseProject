@@ -398,6 +398,164 @@ app.get("/showClasses", function(req,res){ //coming from the headers | shows the
   }
 });
 
+app.get("/showClass", function(req, res){ //to edit the class materials (if owner can edit the name and description and if member can only create and edit decks)
+  let classID = req.query.class;
+  console.log("classID!!!: ", classID);
+  if(classID===undefined){
+    classID = signedInUser.currentClass;
+  }
+  else{
+    signedInUser.currentClass = classID;
+  }
+  // else{
+    let q = "SELECT * FROM class WHERE classId = " + classID;
+    let d = "SELECT * FROM deck WHERE classId = " + classID;
+    let t = "SELECT * FROM topic";
+    let result = [];
+    let deckInfo = [];
+    let topicName = [];
+    let own = false;
+    connection.query(q, function(err, results){
+      if(err) throw err;
+      results.forEach(function(key) {result.push(key);})
+      if(signedInUser.userID === results[0].ownerId){
+        own = true;
+        connection.query(d, function(err, results){
+          if(err) throw err;
+          results.forEach(function(deck) {deckInfo.push(deck);})
+          connection.query(t, function(err, results){
+            if(err) throw err;
+            results.forEach(function(topic) {topicName.push(topic);})
+            res.render("showClass", {key: result, deckInfo: deckInfo, own: own, topic: topicName});
+          });
+
+        });
+      }
+    });
+  // }
+});
+
+app.post("/showClass/deleteDeck", function(req, res){
+  let deckID = req.body.delete;
+  let q = "DELETE FROM cards WHERE deckId = " + deckID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+  });
+  q = "DELETE FROM deck where deckId = " + deckID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+  });
+  res.redirect("/showClass");
+});
+
+app.post("/showClass/editName", function(req,res){
+  let newName = req.body.className;
+  let classID = req.body.edit;
+  console.log(newName, classID);
+  if(newName === undefined || classID === undefined){
+    res.redirect("/dashboard");
+  }
+  else{
+    let q = "UPDATE class SET name = '" + newName +"' WHERE classId = " +  classID;
+    connection.query(q, function(err, results){
+      if(err) throw err;
+      console.log("New Name: ", results);
+    });
+    res.redirect("/showClass");
+  }
+});
+
+app.post("/showClass/updateTopic", function(req, res){
+  let topicID = req.body.chosenTopic;
+  let classID = req.body.updateTopic;
+  let q = "UPDATE class SET topicId = " + topicID + " WHERE classId = " + classID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+  });
+  res.redirect("/showClass");
+});
+
+app.post("/showClass/updateDescription", function(req, res){
+  let newClassDescription = req.body.classDescription;
+  let classID = req.body.updateDescription;
+  console.log("signedInUser: ", signedInUser.currentClass);
+  console.log("Class1111: ", classID);
+  let q = "UPDATE class set description = '" + newClassDescription + "' WHERE classId = " + classID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+
+  });
+  res.redirect("/showClass");
+});
+
+app.post("/createClassDeck", function(req, res){
+  let classID = req.body.createDeck;
+  // let classID = signedInUser.currentClass;
+  let newDeck = {
+    name: "Untitled",
+    classId: classID
+  }
+  connection.query("INSERT INTO deck SET ?", newDeck, function(err, results){
+    if(err) throw err;
+  });
+  res.redirect("/showClass");
+});
+
+app.get("/showClassDeck", function(req, res){
+  let deckID = req.query.edit;
+  if(deckID===undefined){
+    deckID = signedInUser.currentDeckID;
+  }
+  else{
+    signedInUser.currentDeckID = deckID;
+  }
+
+  let q = "SELECT name, topicId, classId FROM deck WHERE deckId =" + deckID;
+  let r = "SELECT cardId, cardName, description FROM cards WHERE deckId = " + deckID;
+  let t = "SELECT * FROM topic";
+  let result = [];
+  let topicName =[];
+  connection.query(q, function(err, results){
+    if(err) throw err;
+    let deckName = results[0].name;
+    let topicID = results[0].topicId;
+
+    connection.query(r, function(err, results){
+      if(err) throw err;
+      results.forEach(function(card) {result.push(card);})
+      console.log(result);
+
+      connection.query(t, function(err, results){
+        if(err) throw err;
+        results.forEach(function(topic) {topicName.push(topic);})
+
+        res.render("showClassDeck", {deckName: deckName, topicID: topicID, key: result, deckID: deckID, topic: topicName});
+      });
+    });
+  });
+});
+
+app.post("/showClassDeck/addCard", function(req, res){
+  let deckID = req.body.add;
+  console.log(deckID);
+  let q = "INSERT INTO cards(deckId, cardName, description) VALUES (" + deckID + ", 'Card Name Here', 'Description Here')";
+  console.log(q);
+  connection.query(q, function(err, results){
+    if(err) throw err;
+    console.log(results);
+    res.redirect("/showClassDeck");
+  });
+});
+
+app.post("/showClassDeck/deleteCard", function(req, res){
+  let cardID = req.body.delete;
+  let q = "DELETE FROM cards WHERE cardId = " + cardID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+  });
+  res.redirect("/showClassDeck");
+});
+
 app.get("/classes", function(req, res){ //passes the data needed to display the classes from the entire site except the ones the user is already in
   let topicID = req.query.box;
   if(topicID === undefined){

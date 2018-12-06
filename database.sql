@@ -162,7 +162,8 @@ VALUES (3, "Data Science", 3, "Resources for individuals"),
 INSERT INTO deck(name, classId, topicId, creationDate)
 VALUES ("Kernels", 1, 3, CURDATE()),
   ("Data Science", 1, 3, DATE '2018-05-15'),
-  ("General Chem", 2, 2, DATE '2018-11-23');
+  ("General Chem", 2, 2, DATE '2018-11-23'),
+  ("Integrals", 3, 1, CURDATE());
 
 INSERT INTO cards(deckId, cardName, description)
 VALUES (13, "Program Exucation", "To load softwarem allocate resources, run & terminate when finished"),

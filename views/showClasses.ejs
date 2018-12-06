@@ -19,7 +19,7 @@
         <tr>
           <td> <%= own[i].name %> </td>
           <form class="" action="/showClass" method="GET">
-            <td><button type="submit" value="<%= own[i].classId %>" name="edit">Edit</button></td>
+            <td><button type="submit" value="<%= own[i].classId %>" name="class">Edit</button></td>
           </form>
           <form class="" action="/showClass/deleteClass" method="GET">
             <td><button type="submit" value="<%= own[i].classId %>" name="delete">Delete</button></td>
@@ -35,6 +35,7 @@
       <% for(let i = 0; i < joined.length; i++) {%>
         <tr>
           <td> <%= joined[i].name %> </td>
+          <!-- below can be app.get("showClass") -->
           <form class="" action="/displayClass1" method="GET">
             <td><button type="submit" value="<%= joined[i].classId %>" name="class">Go to Class</button></td>
           </form>
