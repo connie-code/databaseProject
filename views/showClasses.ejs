@@ -36,7 +36,7 @@
         <tr>
           <td> <%= joined[i].name %> </td>
           <!-- below can be app.get("showClass") -->
-          <form class="" action="/displayClass1" method="GET">
+          <form class="" action="/showClass" method="GET">
             <td><button type="submit" value="<%= joined[i].classId %>" name="class">Go to Class</button></td>
           </form>
           <form class="" action="/showClasses/leaveClass" method="POST">

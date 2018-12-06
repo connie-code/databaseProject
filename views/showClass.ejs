@@ -8,7 +8,7 @@
   <body>
     <% include partials/header %>
     <!-- <table> -->
-    <% if(!own) {%>
+    <% if(own) {%>
       <table>
         <tr>
           <form class="" action="/showClass/editName" method="POST">

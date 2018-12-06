@@ -9,12 +9,12 @@
     <% include partials/header %>
     <table>
       <tr>
-        <form class="" action="/showDeck/editName" method="POST">
+        <form class="" action="/showClassDeck/editName" method="POST">
           <td><input type="text" name="deckName" value="<%= deckName %>"></td>
           <td><button type="submit" value="<%= deckID %>" name="edit">Edit Deck Name</button></td>
         </form>
 
-        <form class="" action="/showDeck/updateTopic" method="POST">
+        <form class="" action="/showClassDeck/updateTopic" method="POST">
           <td>
             <select class="" value="" name="chosenTopic">
               <% for(let i = topic.length-1; i >= 0; i--) {%>

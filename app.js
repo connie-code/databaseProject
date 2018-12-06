@@ -401,38 +401,64 @@ app.get("/showClasses", function(req,res){ //coming from the headers | shows the
 app.get("/showClass", function(req, res){ //to edit the class materials (if owner can edit the name and description and if member can only create and edit decks)
   let classID = req.query.class;
   console.log("classID!!!: ", classID);
+  // if(signedInUser.currentClass !== 0) {
+  //   classID = signedInUser.currentClass;
+  //   signedInUser.currentClass = 0;
+  // } else {
+  //   classID = req.query.class;
+  // }
   if(classID===undefined){
     classID = signedInUser.currentClass;
   }
   else{
     signedInUser.currentClass = classID;
   }
-  // else{
+  console.log("CLASS ID: ", classID, signedInUser.currentClass);
+  if(classID === undefined && signedInUser.currentClass === 0){
+    res.redirect("/dashboard");
+  }
+  else{
     let q = "SELECT * FROM class WHERE classId = " + classID;
     let d = "SELECT * FROM deck WHERE classId = " + classID;
     let t = "SELECT * FROM topic";
+    let m = "SELECT * FROM members WHERE classId = " + classID;
+    // let r = "SELECT * FROM request WHERE classId = " + classID;
     let result = [];
     let deckInfo = [];
     let topicName = [];
+    let members = [];
+
     let own = false;
     connection.query(q, function(err, results){
       if(err) throw err;
       results.forEach(function(key) {result.push(key);})
       if(signedInUser.userID === results[0].ownerId){
         own = true;
+      }
         connection.query(d, function(err, results){
           if(err) throw err;
           results.forEach(function(deck) {deckInfo.push(deck);})
           connection.query(t, function(err, results){
             if(err) throw err;
             results.forEach(function(topic) {topicName.push(topic);})
-            res.render("showClass", {key: result, deckInfo: deckInfo, own: own, topic: topicName});
+
+            connection.query(m, function(err, results){
+              if(err) throw err;
+              console.log("members: ", results);
+              for(let i = 0; i < results.length; i++){
+                members.push(results[i].userId);
+              }
+              console.log(members);
+
+              res.render("showClass", {key: result, deckInfo: deckInfo, own: own, topic: topicName, user: signedInUser.userID, members: members});
+            });
+            // res.render("showClass", {key: result, deckInfo: deckInfo, own: own, topic: topicName});
           });
 
         });
-      }
+
     });
-  // }
+  }
 });
 
 app.post("/showClass/deleteDeck", function(req, res){
@@ -550,6 +576,30 @@ app.post("/showClassDeck/addCard", function(req, res){
 app.post("/showClassDeck/deleteCard", function(req, res){
   let cardID = req.body.delete;
   let q = "DELETE FROM cards WHERE cardId = " + cardID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+  });
+  res.redirect("/showClassDeck");
+});
+
+app.post("/showClassDeck/editName", function(req, res){
+  let newName = req.body.deckName;
+  let deckID = req.body.edit;
+  // signedInUser.currentDeckID = deckID;
+  console.log(newName, deckID);
+  let q = "UPDATE deck SET name = '" + newName +"' WHERE deckId = " + deckID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+    console.log(results);
+    // res.redirect();
+  });
+  res.redirect("/showClassDeck");
+});
+
+app.post("/showClassDeck/updateTopic", function(req, res){
+  let topicID = req.body.chosenTopic;
+  let deckID = req.body.updateTopic;
+  let q = "UPDATE deck SET topicId = " + topicID + " WHERE deckid = " + deckID;
   connection.query(q, function(err, results){
     if(err) throw err;
   });
