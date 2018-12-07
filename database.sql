@@ -40,7 +40,7 @@ CREATE TABLE deck(
   creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   schoolId INT,
   foreign key(userId) references user(userId),
-  foreign key(classId) references class(classId),
+  foreign key(classId) references class(classId) ON DELETE CASCADE ON UPDATE CASCADE,
   foreign key(topicId) references topic(topicId),
   foreign key(schoolId) references school(schoolId)
 );
@@ -50,7 +50,7 @@ CREATE TABLE cards(
   deckId INT NOT NULL,
   cardName VARCHAR(255),
   description VARCHAR(2000),
-  FOREIGN KEY(deckId) REFERENCES deck(deckId)
+  FOREIGN KEY(deckId) REFERENCES deck(deckId) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE profile(
@@ -64,14 +64,14 @@ CREATE TABLE members(
   userId INT,
   classId INT,
   FOREIGN KEY(userId) REFERENCES user(userId),
-  FOREIGN KEY(classId) REFERENCES class(classId)
+  FOREIGN KEY(classId) REFERENCES class(classId) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE request(
   userId INT,
   classId INT,
   FOREIGN KEY(userId) REFERENCES user(userId),
-  FOREIGN KEY(classId) REFERENCES class(classId)
+  FOREIGN KEY(classId) REFERENCES class(classId) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 INSERT INTO user(username, password)
@@ -154,6 +154,7 @@ VALUES (2, "Chromosomes", "asdfghjkl"),
   (2, "Cell", "asdfghjkl"),
   (2, "Mitochondria", "asdfghjkl");
 
+
 INSERT INTO class(ownerId, name, topicId, description)
 VALUES (3, "Data Science", 3, "Resources for individuals"),
   (4, "Chemistry 101", 2, "From Atoms to Chemical"),
@@ -178,10 +179,10 @@ VALUES (1, 1),
   (1, 2),
   (4, 1),
   (3, 2),
-  (2, 1);
+  (2, 1),
+  (3, 3);
 
 INSERT INTO request(userId, classId)
 VALUES -- (1, 3),
-  (3, 3),
   (4, 3),
   (2, 3);

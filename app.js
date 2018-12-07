@@ -185,7 +185,7 @@ app.post("/createDeck", function(req, res){
   let newDeck = {
     name: "Untitled",
     userID: userID
-  }
+  };
   connection.query("INSERT INTO deck SET ?", newDeck, function(err, results){
     if(err) throw err;
   });
@@ -376,6 +376,7 @@ app.get("/displayCards", function(req, res){
 
 app.get("/showClasses", function(req,res){ //coming from the headers | shows the classes you created and the classes you joined
   let userID = signedInUser.userID;
+  console.log("UserID HERE!!: ", userID);
   if(userID === undefined){
     res.redirect("/dashboard");
   }
@@ -392,10 +393,37 @@ app.get("/showClasses", function(req,res){ //coming from the headers | shows the
         if(err) throw err;
         console.log("results2", results);
         results.forEach(function(partOf) {joined.push(partOf);})
-        res.render("showClasses", {own: result, joined: joined});
+        // console.log("ClassId: ", result[0].classId);
+        res.render("showClasses", {own: result, joined: joined, userID: userID});
       });
     });
   }
+});
+
+app.post("/showClasses/createClass", function(req, res){
+  let ownerID = req.body.create;
+  let newClass = {
+    name: "Untitled",
+    ownerId: ownerID
+  };
+  connection.query("INSERT INTO class SET ?", newClass, function(err, results){
+    if(err) throw err;
+  });
+  res.redirect("/showClasses");
+});
+
+app.post("/showClasses/deleteClass", function(req, res){
+
+  let classID = req.body.delete;
+  let q = "DELETE FROM members WHERE classId = " + classID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+  });
+  q = "DELETE FROM class where classId = " + classID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+  });
+  res.redirect("/showClasses");
 });
 
 app.get("/showClass", function(req, res){ //to edit the class materials (if owner can edit the name and description and if member can only create and edit decks)
@@ -882,28 +910,83 @@ app.post("/showRequests/ignore", function(req, res){
 
 app.get("/profile", function(req, res){
   let userID = req.query.creator;
-  // let q = "SELECT * FROM deck WHERE userId = " + userID;
-  // let r = "SELECT * FROM user WHERE userId = " + userID;
-  // let result = [];
-  // connection.query(q, function(err, results){
-  //   if (err) throw err;
-  //   console.log(results);
-  //   res.render("profile");
-  // });
+
   let q = "SELECT name, deckId, DATE_FORMAT(creationDate, '%b. %d, %Y') AS CD FROM deck WHERE userId = " + userID;
   // let q = "SELECT * FROM deck WHERE userId = " + userID;
+  let classOwned = "SELECT * FROM class WHERE ownerId = " + userID;
+  let classIn = "SELECT * FROM class WHERE classId IN (SELECT classId FROM members WHERE userId = " + userID + ")";
   let result = [];
+  let classes =[];
   let name = "SELECT username FROM user WHERE userId = " + userID;
   let created ="SELECT DATE(creationDate) AS CD FROM deck WHERE userId = " + userID;
   connection.query(q, function(err, results){
     if(err) throw err;
     results.forEach(function(deck) {result.push(deck);});
-    connection.query(name, function(err, results){
+    connection.query(classOwned, function(err, results){
       if(err) throw err;
-      res.render("profile", {name: results[0].username, key: result});
+      results.forEach(function(own) {classes.push(own);});
+      console.log("CLASSESSS1: ", classes);
+      connection.query(classIn, function(err, results){
+        if(err) throw err;
+        results.forEach(function(joined) {classes.push(joined);});
+        console.log("CLASSESSS2: ", classes);
+        console.log("NO.1: ", classes[0].classId);
+        connection.query(name, function(err, results){
+          res.render("profile", {name: results[0].username, key: result, userID: userID, classes: classes});
+        });
+      });
+
     });
   });
   // res.render("profile");
+});
+
+app.get("/getProfileClass", function(req, res){
+  let classID = req.query.chosenClass;
+  let userID = req.query.class;
+  console.log("ClassId: ", classID, "userId: ", userID);
+  if(classID === undefined || userID === undefined){
+    res.redirect("/dashboard");
+  }
+  else{
+    let q = "SELECT * FROM class WHERE classId = " + classID;
+    let d = "SELECT * FROM deck WHERE classId = " + classID;
+    let c = "SELECT * FROM members WHERE classId = " + classID;
+    let r = "SELECT * FROM request WHERE classId = " + classID;
+    let requested = false;
+    let result = [];
+    let classMaterial = [];
+    let members = [];
+    connection.query(q, function(err, results){
+      if(err) throw err;
+      console.log("classInfo: ", results);
+      results.forEach(function(info) {result.push(info);})
+      connection.query(d, function(err, results){
+        if(err) throw err;
+        console.log("key: ", results);
+        results.forEach(function(material) {classMaterial.push(material);})
+        connection.query(c, function(err, results){
+          if(err) throw err;
+          console.log("members: ", results);
+          for(let i = 0; i < results.length; i++){
+            members.push(results[i].userId);
+          }
+          console.log(members);
+          connection.query(r, function(err, results){
+            if(err) throw err;
+            console.log("1request", results);
+            for(let i = 0; i < results.length; i++){
+              if(signedInUser.userID === results[i].userId){
+                requested = true;
+              }
+            }
+            res.render("displayClass", {classInfo: result, key: classMaterial, user: signedInUser.userID, members: members, request: requested});
+          });
+        });
+
+      });
+    });
+  }
 });
 
 app.post("/dashboard/deleteDeck", function(req, res){

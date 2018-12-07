@@ -8,6 +8,28 @@
     <% include partials/header %>
     <!-- <h1>Profile</h1> -->
     <h1> <%= name %> Profile </h1>
+    <br>
+    <table>
+
+      <tr>
+        <form class="" action="/getProfileClass" method="GET">
+          <td></td>
+          <td></td>
+          <td>
+            <label for="class">User Classes: </label>
+            <select id="class" class="" name="chosenClass">
+              <!-- <option value=""> </option> -->
+              <% for(let i = 0; i < classes.length; i++) {%>
+                <option value="<%= classes[i].classId %>"><%= classes[i].name %></option>
+              <% } %>
+            </select>
+          </td>
+          <td><button type="submit" value="<%= userID %>" name="class">View</button></td>
+
+        </form>
+      </tr>
+    </table>
+    <br>
     <table>
       <thead>
         <tr>
