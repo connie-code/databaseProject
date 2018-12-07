@@ -46,7 +46,7 @@
 
       <% for(let i = 0; i < key.length; i++) {%>
         <tr>
-          <form class="" action="/showDeck/updateCard" method="post">
+          <form class="" action="/showClassDeck/updateCard" method="post">
             <td><%= i+1 %></td>
             <td><textarea rows="2" cols="40" name="cardName" value="<%= key[i].cardName %>"><%= key[i].cardName %></textarea></td>
             <td><textarea rows="4" cols="50" name="cardDescription" value="<%= key[i].description %>"><%= key[i].description %></textarea></td>

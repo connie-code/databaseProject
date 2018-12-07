@@ -415,7 +415,7 @@ app.post("/showClasses/createClass", function(req, res){
 app.post("/showClasses/deleteClass", function(req, res){
 
   let classID = req.body.delete;
-  let q = "DELETE FROM members WHERE classId = " + classID;
+  let q = "DELETE FROM deck WHERE classId = " + classID;
   connection.query(q, function(err, results){
     if(err) throw err;
   });
@@ -599,6 +599,23 @@ app.post("/showClassDeck/addCard", function(req, res){
     console.log(results);
     res.redirect("/showClassDeck");
   });
+});
+
+app.post("/showClassDeck/updateCard", function(req, res){
+  let newCardName = req.body.cardName;
+  let newCardDescription = req.body.cardDescription;
+  let cardID = req.body.cardId;
+  let q = "UPDATE cards SET cardName = '" + newCardName +"' WHERE cardId = " + cardID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+    console.log(results);
+  });
+  q = "UPDATE cards SET description = '" + newCardDescription +"' WHERE cardId = " + cardID;
+  connection.query(q, function(err, results){
+    if(err) throw err;
+    console.log(results);
+  });
+  res.redirect("/showClassDeck");
 });
 
 app.post("/showClassDeck/deleteCard", function(req, res){
