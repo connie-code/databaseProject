@@ -8,7 +8,7 @@
   <body>
     <% include partials/header %>
     <h1>Dashboard</h1>
-    
+
     <label for="decks">Explore Decks: </label>
     <table id="decks">
       <table border="1">
@@ -69,7 +69,15 @@
 
         <% } %>
       </table>
-
+      <h4>Merge Decks: </h4>
+      <p><em>NOTE: In order to merge, the topic of the two decks must be the same!</em></p>
+      <form class="" action="/mergeDecks" method="post">
+        <label for="source">Source: </label>
+        <input id="source" type="text" name="source" value="">
+        <label for="destination">Destination: </label>
+        <input id="destination" type="text" name="destination" value="">
+        <button type="submit" name="button">Merge</button>
+      </form>
 
   </body>
 </html>

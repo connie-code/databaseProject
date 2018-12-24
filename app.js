@@ -14,8 +14,7 @@ app.use(express.static(__dirname + "/public")); // Use public folder to access c
 var connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    // password: 'yourDataBasePassword',
-    password: "Noosa11",
+    password: 'yourDataBasePassword',
     database: 'quizbase'
 });
 
@@ -71,23 +70,6 @@ app.post("/login", function(req, res){
     });
 });
 
-// app.get("/login", function(req, res){
-//   let username = req.query.username;
-//   let email = req.query.email;
-//   let q = "SELECT username, email FROM user WHERE username =" + username + " AND email = " + email;
-//   console.log(q, username, email);
-//   connection.query(q, function(err, results){
-//     if(err) throw err;
-//     if(results.username){
-//       res.redirect("/dashboard");
-//     }
-//   });
-// });
-
-// app.get("/homepage", function(req, res){
-//   res.render("homepage");
-// });
-
 app.post("/register", function(req, res){
     let username = req.body.username;
     let password = req.body.password;
@@ -120,45 +102,7 @@ app.post("/register", function(req, res){
       }
     });
 });
-// app.post("/register", function(req, res){
-//     let username = req.body.username;
-//     let password = req.body.password;
-//     console.log(username, password);
-//     let q = "SELECT username FROM user WHERE username = '" + username + "'";
-//     connection.query(q, function(err, results){
-//       if(err) throw err;
-//       if(results[0]){
-//         signedInUser.userExist = true;
-//       }
-//       console.log(signedInUser.userExist);
-//
-//     });
-//     console.log(signedInUser.userExist);
-//     if(signedInUser.userExist){
-//       q = "INSERT INTO user(username, password) VALUES ('" + username + "', '" + password + "')";
-//       connection.query(q, function(err, results){
-//         if(err) throw err;
-//         console.log(results);
-//
-//       });
-//       q = "SELECT userId, username, password FROM user WHERE username = '" + username + "' AND password = '" + password + "'";
-//       connection.query(q, function(err, results){
-//         if(err) throw err;
-//         if(results[0]){
-//           console.log("Account Successfully Created!");
-//           signedInUser.userID = results[0].userId;
-//           signedInUser.userName = results[0].username;
-//           signedInUser.loggedIn = true;
-//           signedInUser.userExist = false;
-//           res.redirect('/dashboard');
-//         }
-//       });
-//     }
-//     else{
-//       console.log("Account Unsuccessfully Created!");
-//       res.redirect('/');
-//     }
-// });
+
 
 app.get("/dashboard", function(req, res){
   // console.log(signedInUser.userID);
@@ -179,6 +123,17 @@ app.get("/dashboard", function(req, res){
   }
 });
 //***************************
+
+app.post("/mergeDecks", function(req, res){
+  let source = req.body.source;
+  let destination = req.body.destination;
+  let q = "CALL mergeDecks(" + signedInUser.userID + ", '" + source + "', '" + destination + "')";
+  connection.query(q, function(err, result){
+    if(err) throw err;
+   });
+   res.redirect("/dashboard");
+});
+
 app.post("/createDeck", function(req, res){
   let userID = signedInUser.userID;
   // let q = "INSERT INTO deck (name, userId) VALUES ('Untitled', "+ userID + ")";
@@ -230,7 +185,6 @@ app.get("/showDeck", function(req, res){ //to edit the deck selected from dashbo
         });
 
       });
-      // res.render("showDeck", {key: result, deckID: deckID});
     });
   });
 });
@@ -238,13 +192,11 @@ app.get("/showDeck", function(req, res){ //to edit the deck selected from dashbo
 app.post("/showDeck/editName", function(req, res){
   let newName = req.body.deckName;
   let deckID = req.body.edit;
-  // signedInUser.currentDeckID = deckID;
   console.log(newName, deckID);
   let q = "UPDATE deck SET name = '" + newName +"' WHERE deckId = " + deckID;
   connection.query(q, function(err, results){
     if(err) throw err;
     console.log(results);
-    // res.redirect();
   });
   res.redirect("/showDeck");
 });
@@ -283,7 +235,6 @@ app.post("/showDeck/addCard", function(req, res){
   console.log(q);
   connection.query(q, function(err, results){
     if(err) throw err;
-    // res.render("addCard", {key: result, deckID: deckID});
     console.log(results);
     res.redirect("/showDeck");
   });
@@ -371,7 +322,6 @@ app.get("/displayCards", function(req, res){
       });
     });
   }
-
 });
 
 app.get("/showClasses", function(req,res){ //coming from the headers | shows the classes you created and the classes you joined
@@ -429,12 +379,6 @@ app.post("/showClasses/deleteClass", function(req, res){
 app.get("/showClass", function(req, res){ //to edit the class materials (if owner can edit the name and description and if member can only create and edit decks)
   let classID = req.query.class;
   console.log("classID!!!: ", classID);
-  // if(signedInUser.currentClass !== 0) {
-  //   classID = signedInUser.currentClass;
-  //   signedInUser.currentClass = 0;
-  // } else {
-  //   classID = req.query.class;
-  // }
   if(classID===undefined){
     classID = signedInUser.currentClass;
   }
@@ -480,7 +424,6 @@ app.get("/showClass", function(req, res){ //to edit the class materials (if owne
 
               res.render("showClass", {key: result, deckInfo: deckInfo, own: own, topic: topicName, user: signedInUser.userID, members: members});
             });
-            // res.render("showClass", {key: result, deckInfo: deckInfo, own: own, topic: topicName});
           });
 
         });
@@ -684,18 +627,6 @@ app.get("/classes", function(req, res){ //passes the data needed to display the 
           res.render("displayClasses", {key: result});
         });
       });
-      // connection.query(c, function(err, results){
-      //   if(err) throw err;
-      //   for(let i = 0; i < results.length; i++){
-      //     if((signedInUser.userID === results[i].ownerId)){ //makes sure to only display the classes that you don't own!!! So you get the option to request to join or not
-      //       continue;
-      //     }
-      //     else{
-      //       result.push(results[i]);
-      //     }
-      //   }
-      //   res.render("displayClasses", {key: result});
-      // });
     });
   }
 });
@@ -768,30 +699,6 @@ app.post("/showClasses/leaveClass", function(req, res){
     });
   }
 });
-
-// app.get("/displayClass/displayCards", function(req, res){
-//   let deckID = req.query.deck;
-//   if(deckID === undefined){
-//     res.redirect("/dashboard");
-//   }
-//   else{
-//     let q = "SELECT deck.name AS deckName, class.name AS className, deck.classId FROM class JOIN deck ON class.classId = deck.classId WHERE deckId = " + deckID;
-//     let r = "SELECT cardName, description FROM cards WHERE deckId = " + deckID;
-//     let deckInfo = [];
-//     let result = [];
-//     connection.query(q, function(err, results){
-//       if(err) throw err;
-//       console.log("deckInfo: ", results)
-//       results.forEach(function(deck) {deckInfo.push(deck);})
-//       connection.query(r, function(err, results){
-//         if(err) throw err;
-//         results.forEach(function(card) {result.push(card);})
-//
-//         res.render("class", {deckInfo: deckInfo, key: result});
-//       });
-//     });
-//   }
-// });
 
 app.get("/displayClassDeck", function(req,res){
   let deckID = req.query.deck;
@@ -1025,7 +932,7 @@ app.post("/signout", function(req, res){
   signedInUser.loggedIn = false;
   signedInUser.currentDeckID = 0;
   res.redirect("/");
-})
+});
 
 app.get('*', function(req, res) {
     res.redirect('/dashboard');

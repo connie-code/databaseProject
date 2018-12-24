@@ -1,4 +1,4 @@
-DROP DATABASE quizbase;
+DROP DATABASE if exists quizbase;
 CREATE DATABASE quizbase;
 
 USE quizbase;
@@ -34,8 +34,8 @@ CREATE TABLE class(
 CREATE TABLE deck(
   deckId INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(255),
-  classId INT, -- For class desks
-  userId INT, -- For user desks
+  classId INT, -- For class decks
+  userId INT, -- For user decks
   topicId INT DEFAULT 8,
   creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   schoolId INT,
@@ -47,32 +47,56 @@ CREATE TABLE deck(
 
 CREATE TABLE cards(
   cardId INT PRIMARY KEY AUTO_INCREMENT,
-  deckId INT NOT NULL,
+  deckId INT,
   cardName VARCHAR(255),
   description VARCHAR(2000),
   FOREIGN KEY(deckId) REFERENCES deck(deckId)
 );
+
+delimiter //
+create procedure mergeDecks(IN userID int, IN DnameSrc varchar(255), IN DnameDst varchar(255))
+mergeDecksLabel: Begin
+	DECLARE deckID1, deckID2 INTEGER UNSIGNED;
+    DECLARE topicID1, topicID2 integer unsigned;
+    select deckId from deck where userId = userID AND name = DnameSrc LIMIT 1 into deckID1;
+    select deckId from deck where userId = userID AND name = DnameDst LIMIT 1 into deckID2;
+    select topicId from deck where userId = userID AND deckId = deckID1 into topicID1;
+    select topicId from deck where userId = userID AND deckId = deckID2 into topicID2;
+    if (topicID1 = topicID2) then
+		CALL adjustDecks(userID, deckID1, deckID2);
+        ELSE leave mergeDeckslabel;
+	End if;
+End;//
+
+create procedure adjustDecks(IN userID int, IN Decksrc int, IN Deckdst int)
+Begin
+	update cards set deckId = Deckdst where deckId = Decksrc;
+    delete from deck where userId = userID AND deckId = Decksrc;
+End;//
+
+-- CALL mergeDecks(1, 'Linear Algebra 346', 'Algortihms');
+-- CALL mergeDecks(1, 'American Revolution', 'Constitution');
 
 CREATE TABLE profile(
   userId INT,
   deckId INT,
   FOREIGN KEY(userId) REFERENCES user(userId),
   FOREIGN KEY(deckId) REFERENCES deck(deckId) ON DELETE CASCADE ON UPDATE CASCADE
-);
+);//
 
 CREATE TABLE members(
   userId INT,
   classId INT,
   FOREIGN KEY(userId) REFERENCES user(userId),
   FOREIGN KEY(classId) REFERENCES class(classId)
-);
+);//
 
 CREATE TABLE request(
   userId INT,
   classId INT,
   FOREIGN KEY(userId) REFERENCES user(userId),
   FOREIGN KEY(classId) REFERENCES class(classId)
-);
+);//
 
 create table userlog(
 	ID int auto_increment Primary key,
@@ -80,7 +104,7 @@ create table userlog(
 	username VARCHAR(255) NOT NULL,
     action varchar(255) NOT NULL,
     timeSTP TIMESTAMP Default current_timestamp
-);
+);//
 
 delimiter //
 create trigger userTRIGUPD
@@ -544,8 +568,7 @@ VALUES (3, "Data Science", 3, "Resources for individuals"),
 INSERT INTO deck(name, classId, topicId, creationDate)
 VALUES ("Kernels", 1, 3, CURDATE()),
   ("Data Science", 1, 3, DATE '2018-05-15'),
-  ("General Chem", 2, 2, DATE '2018-11-23'),
-  ("Integrals", 3, 1, CURDATE());
+  ("General Chem", 2, 2, DATE '2018-11-23');
 //
 
 INSERT INTO cards(deckId, cardName, description)
